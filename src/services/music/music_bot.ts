@@ -94,6 +94,7 @@ export class MusicBot {
 
     private async play(guild: Guild, song: Song) {
         const serverQueue = this.queue.get(guild.id) as QueueContruct;
+        console.log(serverQueue);
         if (!song) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
             serverQueue.voiceChannel.leave();
