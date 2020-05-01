@@ -1,0 +1,1 @@
+//# sourceMappingURL=inversify.config.js.map
