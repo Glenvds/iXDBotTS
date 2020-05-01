@@ -144,12 +144,15 @@ let MusicBot = class MusicBot {
                 this.queue.delete(guild.id);
                 return;
             }
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: [${song.title}](${song.url}). Request by ${song.requester}`);
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${song.title}. Request by ${song.requester.username}`);
             try {
                 const ytStream = yield this.ytService.getStreamYoutube(song);
-                console.log(serverQueue);
-                serverQueue;
-                const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" });
+                const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
+                    .on("finish", () => {
+                    console.log(song.title + " ended playing");
+                    serverQueue.songs.shift();
+                    this.play(guild, serverQueue.songs[0]);
+                });
                 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             }
             catch (err) {

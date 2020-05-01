@@ -45,13 +45,13 @@ export class MusicBot {
 
         if (!serverQueue) {
             try {
-                const queueContruct = await QueueContruct.create({guildId: message.guild.id, textChannel: message.channel as TextChannel, voiceChannel: voiceChannel, firstSong: song});
+                const queueContruct = await QueueContruct.create({ guildId: message.guild.id, textChannel: message.channel as TextChannel, voiceChannel: voiceChannel, firstSong: song });
                 this.addNewServerQueueToMainQueue(queueContruct)
                 this.play(message.guild, queueContruct.songs[0]);
-            }catch(err){
+            } catch (err) {
                 console.log("Error in playQueue while setting up queue: " + err);
             }
-            
+
         } else {
             serverQueue.addSong(song);
             this.messageResponder.sendResponseToChannel(message.channel as TextChannel, `${song.title} has been added to the queue`); //ADD USERNAME TO RESPONSE
@@ -113,13 +113,15 @@ export class MusicBot {
             return;
         }
 
-        this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: [${song.title}](${song.url}). Request by ${song.requester}`);
+        this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${song.title}. Request by ${song.requester.username}`);
         try {
             const ytStream = await this.ytService.getStreamYoutube(song);
-            console.log(serverQueue);
-            serverQueue
-
-            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" });
+            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
+            .on("finish", () => {
+                console.log(song.title + " ended playing");
+                serverQueue.songs.shift();
+                this.play(guild, serverQueue.songs[0])
+            });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         } catch (err) {
             console.log("Error in play: " + err);
@@ -144,7 +146,7 @@ export class MusicBot {
         return message.content.substring(message.content.indexOf(' ') + 1);
     }
 
-  
+
 
 
 
