@@ -38,7 +38,8 @@ export class MusicBot {
         const song: Song = await this.getSong(contentOfMessage, message.author);
 
         if (!serverQueue) {
-            const queueContruct = new QueueContruct(message.guild, message.channel as TextChannel, voiceChannel, song);
+            const connection = await this.setUpVoiceConnection(voiceChannel);
+            const queueContruct = new QueueContruct(message.guild, message.channel as TextChannel, voiceChannel, song, connection);
             this.addNewServerQueueToMainQueue(queueContruct)
             this.play(message.guild, queueContruct.songs[0]);
         } else {
@@ -94,7 +95,7 @@ export class MusicBot {
 
     private async play(guild: Guild, song: Song) {
         const serverQueue = this.queue.get(guild.id) as QueueContruct;
-        console.log(serverQueue);
+        
         if (!song) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
             serverQueue.voiceChannel.leave();
@@ -105,6 +106,8 @@ export class MusicBot {
         this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: [${song.title}](${song.url}). Request by ${song.requester}`);
         try {
             const ytStream = await this.ytService.getStreamYoutube(song);
+            console.log(serverQueue);
+            
             const dispatcher: StreamDispatcher = serverQueue.connection.play(ytStream, { type: "opus" });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         } catch (err) {
@@ -130,6 +133,13 @@ export class MusicBot {
         return message.content.substring(message.content.indexOf(' ') + 1);
     }
 
+    private async setUpVoiceConnection(voiceChannel: VoiceChannel): Promise<VoiceConnection>{
+        try {
+            return await voiceChannel.join();
+        } catch (err) {
+            console.log("Error while setting up voice connection: " + err);
+        }
+    }
 
 
 

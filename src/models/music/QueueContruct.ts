@@ -4,12 +4,11 @@ import { Song } from "./song";
 
 @injectable()
 export class QueueContruct {
-    connection: VoiceConnection;
+    //connection: VoiceConnection;
     songs = new Array<Song>();
     volume: number;
 
-    constructor(public guild: Guild, public textChannel: TextChannel, public voiceChannel: VoiceChannel, firstSong: Song) {
-        this.setUpVoiceConnection(voiceChannel);
+    constructor(public guild: Guild, public textChannel: TextChannel, public voiceChannel: VoiceChannel, firstSong: Song, public connection: VoiceConnection) {
         this.addSong(firstSong);
         this.volume = 5;
     }
@@ -24,15 +23,5 @@ export class QueueContruct {
 
     setVolume(volume: number) {
         this.volume = volume;
-    }
-
-
-
-    async setUpVoiceConnection(voiceChannel: VoiceChannel) {
-        try {
-            this.connection = await voiceChannel.join();
-        } catch (err) {
-            console.log("Error while setting up voice connection: " + err);
-        }
-    }
+    }    
 }
