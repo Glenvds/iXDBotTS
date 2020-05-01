@@ -62,11 +62,22 @@ let MusicBot = class MusicBot {
         return __awaiter(this, void 0, void 0, function* () {
             const voiceChannel = message.member.voice.channel;
             const contentOfMessage = this.getContentOutOfMessage(message);
-            const song = yield this.getSong(contentOfMessage, message.author);
+            let song;
+            try {
+                song = yield this.getSong(contentOfMessage, message.author);
+            }
+            catch (err) {
+                console.log("Error in playQueue getSong(): " + err);
+            }
             if (!serverQueue) {
-                const queueContruct = new QueueContruct_1.QueueContruct(message.guild, message.channel, voiceChannel, song);
-                this.addNewServerQueueToMainQueue(queueContruct);
-                this.play(message.guild, queueContruct.songs[0]);
+                try {
+                    const queueContruct = yield QueueContruct_1.QueueContruct.create({ guildId: message.guild.id, textChannel: message.channel, voiceChannel: voiceChannel, firstSong: song });
+                    this.addNewServerQueueToMainQueue(queueContruct);
+                    this.play(message.guild, queueContruct.songs[0]);
+                }
+                catch (err) {
+                    console.log("Error in playQueue while setting up queue: " + err);
+                }
             }
             else {
                 serverQueue.addSong(song);
@@ -76,7 +87,7 @@ let MusicBot = class MusicBot {
     }
     addNewServerQueueToMainQueue(serverQueue) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.queue.set(serverQueue.guild.id, serverQueue);
+            this.queue.set(serverQueue.guildId, serverQueue);
         });
     }
     getQueue(serverQueue) {
@@ -127,7 +138,6 @@ let MusicBot = class MusicBot {
     play(guild, song) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverQueue = this.queue.get(guild.id);
-            console.log(serverQueue);
             if (!song) {
                 this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
                 serverQueue.voiceChannel.leave();
@@ -137,7 +147,9 @@ let MusicBot = class MusicBot {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: [${song.title}](${song.url}). Request by ${song.requester}`);
             try {
                 const ytStream = yield this.ytService.getStreamYoutube(song);
-                const dispatcher = serverQueue.connection.play(ytStream, { type: "opus" });
+                console.log(serverQueue);
+                serverQueue;
+                const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" });
                 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             }
             catch (err) {
@@ -150,13 +162,13 @@ let MusicBot = class MusicBot {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There are no songs to skip!");
         }
         else {
-            serverQueue.connection.dispatcher.end();
+            serverQueue.getConnection().dispatcher.end();
         }
     }
     stop(serverQueue) {
         this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Deleted my queue, I'm out.");
         serverQueue.emptySongs();
-        serverQueue.connection.dispatcher.end();
+        serverQueue.getConnection().dispatcher.end();
     }
     getContentOutOfMessage(message) {
         return message.content.substring(message.content.indexOf(' ') + 1);

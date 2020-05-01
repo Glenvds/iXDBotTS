@@ -2,14 +2,23 @@ import { injectable } from "inversify";
 import { VoiceChannel, TextChannel, VoiceConnection, IntegrationEditData, Message, Guild } from "discord.js";
 import { Song } from "./song";
 
+export class QueueContructOptions{
+    guildId: string;
+    textChannel: TextChannel;
+    voiceChannel: VoiceChannel;
+    firstSong: Song;
+}
+
 @injectable()
-export class QueueContruct {
-    //connection: VoiceConnection;
+export class QueueContruct extends QueueContructOptions {
     songs = new Array<Song>();
     volume: number;
+    private connection: VoiceConnection;
 
-    constructor(public guild: Guild, public textChannel: TextChannel, public voiceChannel: VoiceChannel, firstSong: Song, public connection: VoiceConnection) {
-        this.addSong(firstSong);
+    private constructor(options: QueueContructOptions){
+        super();
+        Object.assign(this, options);
+        this.addSong(this.firstSong);
         this.volume = 5;
     }
 
@@ -20,8 +29,29 @@ export class QueueContruct {
     emptySongs() {
         this.songs = [];
     }
+    
+    setConnection(connection: VoiceConnection){
+        this.connection = connection;
+    }
 
-    setVolume(volume: number) {
-        this.volume = volume;
-    }    
+    getConnection(): VoiceConnection{
+        return this.connection;
+    }
+    
+    static async create(options: QueueContructOptions): Promise<QueueContruct>{
+        const queueContruct = new QueueContruct(options);
+        const connection = await queueContruct.setUpVoiceConnection(queueContruct.voiceChannel);
+        queueContruct.setConnection(connection);
+        return queueContruct;
+    }
+
+    private async setUpVoiceConnection(voiceChannel: VoiceChannel): Promise<VoiceConnection> {
+        try {
+            return await voiceChannel.join();
+        } catch (err) {
+            console.log("Error while setting up voice connection: " + err);
+        }
+    }
+
+
 }

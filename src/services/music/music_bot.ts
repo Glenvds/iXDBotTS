@@ -45,8 +45,7 @@ export class MusicBot {
 
         if (!serverQueue) {
             try {
-                const connection = await this.setUpVoiceConnection(voiceChannel);
-                const queueContruct = new QueueContruct(message.guild, message.channel as TextChannel, voiceChannel, song, connection);
+                const queueContruct = await QueueContruct.create({guildId: message.guild.id, textChannel: message.channel as TextChannel, voiceChannel: voiceChannel, firstSong: song});
                 this.addNewServerQueueToMainQueue(queueContruct)
                 this.play(message.guild, queueContruct.songs[0]);
             }catch(err){
@@ -60,7 +59,7 @@ export class MusicBot {
     }
 
     private async addNewServerQueueToMainQueue(serverQueue: QueueContruct) {
-        this.queue.set(serverQueue.guild.id, serverQueue);
+        this.queue.set(serverQueue.guildId, serverQueue);
     }
 
     private getQueue(serverQueue: QueueContruct) {
@@ -120,7 +119,7 @@ export class MusicBot {
             console.log(serverQueue);
             serverQueue
 
-            const dispatcher: StreamDispatcher = serverQueue.connection.play(ytStream, { type: "opus" });
+            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         } catch (err) {
             console.log("Error in play: " + err);
@@ -131,27 +130,21 @@ export class MusicBot {
         if (!serverQueue) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There are no songs to skip!");
         } else {
-            serverQueue.connection.dispatcher.end();
+            serverQueue.getConnection().dispatcher.end();
         }
     }
 
     private stop(serverQueue: QueueContruct) {
         this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Deleted my queue, I'm out.");
         serverQueue.emptySongs();
-        serverQueue.connection.dispatcher.end();
+        serverQueue.getConnection().dispatcher.end();
     }
 
     private getContentOutOfMessage(message: Message): string {
         return message.content.substring(message.content.indexOf(' ') + 1);
     }
 
-    private async setUpVoiceConnection(voiceChannel: VoiceChannel): Promise<VoiceConnection> {
-        try {
-            return await voiceChannel.join();
-        } catch (err) {
-            console.log("Error while setting up voice connection: " + err);
-        }
-    }
+  
 
 
 

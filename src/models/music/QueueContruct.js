@@ -17,18 +17,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var QueueContruct_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-const discord_js_1 = require("discord.js");
-const song_1 = require("./song");
-let QueueContruct = class QueueContruct {
-    constructor(guild, textChannel, voiceChannel, firstSong) {
-        this.guild = guild;
-        this.textChannel = textChannel;
-        this.voiceChannel = voiceChannel;
+class QueueContructOptions {
+}
+exports.QueueContructOptions = QueueContructOptions;
+let QueueContruct = QueueContruct_1 = class QueueContruct extends QueueContructOptions {
+    constructor(options) {
+        super();
         this.songs = new Array();
-        this.setUpVoiceConnection(voiceChannel);
-        this.addSong(firstSong);
+        Object.assign(this, options);
+        this.addSong(this.firstSong);
         this.volume = 5;
     }
     addSong(song) {
@@ -37,13 +37,24 @@ let QueueContruct = class QueueContruct {
     emptySongs() {
         this.songs = [];
     }
-    setVolume(volume) {
-        this.volume = volume;
+    setConnection(connection) {
+        this.connection = connection;
+    }
+    getConnection() {
+        return this.connection;
+    }
+    static create(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queueContruct = new QueueContruct_1(options);
+            const connection = yield queueContruct.setUpVoiceConnection(queueContruct.voiceChannel);
+            queueContruct.setConnection(connection);
+            return queueContruct;
+        });
     }
     setUpVoiceConnection(voiceChannel) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                this.connection = yield voiceChannel.join();
+                return yield voiceChannel.join();
             }
             catch (err) {
                 console.log("Error while setting up voice connection: " + err);
@@ -51,9 +62,9 @@ let QueueContruct = class QueueContruct {
         });
     }
 };
-QueueContruct = __decorate([
+QueueContruct = QueueContruct_1 = __decorate([
     inversify_1.injectable(),
-    __metadata("design:paramtypes", [discord_js_1.Guild, discord_js_1.TextChannel, discord_js_1.VoiceChannel, song_1.Song])
+    __metadata("design:paramtypes", [QueueContructOptions])
 ], QueueContruct);
 exports.QueueContruct = QueueContruct;
 //# sourceMappingURL=QueueContruct.js.map
