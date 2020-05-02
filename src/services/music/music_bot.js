@@ -184,6 +184,10 @@ let MusicBot = class MusicBot {
         }
     }
     stop(serverQueue) {
+        if (!serverQueue) {
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
+            return;
+        }
         if (this.isMusicPlaying) {
             this.isMusicPlaying = false;
             serverQueue.emptySongs();
@@ -193,9 +197,6 @@ let MusicBot = class MusicBot {
             this.isRadioPlaying = false;
             serverQueue.emptySongs();
             serverQueue.getConnection().dispatcher.end();
-        }
-        else {
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
         }
     }
     getContentOutOfMessage(message) {
