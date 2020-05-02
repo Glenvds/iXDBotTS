@@ -20,7 +20,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var QueueContruct_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-const song_1 = require("./song");
 class QueueContructOptions {
 }
 exports.QueueContructOptions = QueueContructOptions;
@@ -29,13 +28,11 @@ let QueueContruct = QueueContruct_1 = class QueueContruct extends QueueContructO
         super();
         this.songs = new Array();
         Object.assign(this, options);
-        if (this.firstPlay instanceof song_1.Song) {
-            this.addSong(this.firstPlay);
-        }
+        this.addToQueue(this.firstPlay);
         this.volume = 5;
     }
-    addSong(song) {
-        this.songs.push(song);
+    addToQueue(music) {
+        this.songs.push(music);
     }
     emptySongs() {
         this.songs = [];

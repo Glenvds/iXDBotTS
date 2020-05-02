@@ -19,14 +19,12 @@ export class QueueContruct extends QueueContructOptions {
     private constructor(options: QueueContructOptions){
         super();
         Object.assign(this, options);
-        if(this.firstPlay instanceof Song){
-            this.addSong(this.firstPlay);
-        }        
+        this.addToQueue(this.firstPlay);       
         this.volume = 5;
     }
 
-    addSong(song: Song) {
-        this.songs.push(song);
+    addToQueue(music: Song | RadioStation) {
+        this.songs.push(music);
     }
 
     emptySongs() {

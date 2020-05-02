@@ -72,7 +72,7 @@ export class MusicBot {
             }
 
         } else {
-            serverQueue.addSong(song);
+            serverQueue.addToQueue(song);
             this.messageResponder.sendResponseToChannel(textChannel, `${song.title} has been added to the queue`); //ADD USERNAME TO RESPONSE
         }
     }
@@ -90,6 +90,7 @@ export class MusicBot {
         }
 
         if(this.isRadioPlaying){
+            const currentRadioStation = serverQueue.songs
             this.messageResponder.sendResponseToChannel(textChannel, "Current radio station playing: " + serverQueue.songs[0]);
             return;
         }
