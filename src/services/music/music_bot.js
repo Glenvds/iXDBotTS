@@ -106,6 +106,11 @@ let MusicBot = class MusicBot {
     }
     getQueue(message) {
         const serverQueue = this.queue.get(message.guild.id);
+        const textChannel = message.channel;
+        if (!serverQueue) {
+            this.messageResponder.sendResponseToChannel(textChannel, "There is currently no queue! Start adding song with !play");
+            return;
+        }
         let text = "--- Music queue ---\n\n";
         serverQueue.songs.forEach((song, index) => {
             if (index === 0) {
@@ -178,8 +183,9 @@ let MusicBot = class MusicBot {
     }
     skip(message) {
         const serverQueue = this.queue.get(message.guild.id);
+        const textChannel = message.channel;
         if (!serverQueue) {
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There are no songs to skip!");
+            this.messageResponder.sendResponseToChannel(textChannel, "There are no songs to skip!");
         }
         else {
             serverQueue.getConnection().dispatcher.end();
@@ -218,6 +224,7 @@ let MusicBot = class MusicBot {
             const voiceChannel = message.member.voice.channel;
             const textChannel = message.channel;
             const guildId = message.guild.id;
+            const requestedStation = this.radioStationService.getRadioStationFromInput(content);
             if (!content) {
                 if (this.isRadioPlaying) {
                     const currentRadioStation = this.radioQueue.get(guildId);
@@ -232,10 +239,9 @@ let MusicBot = class MusicBot {
                     this.messageResponder.sendResponseToChannel(textChannel, "Music is already playing. First stop playing music(!stop).");
                 }
                 else if (this.isRadioPlaying) {
-                    //CHANGE STATION
+                    this.playRadio(guildId, requestedStation);
                 }
                 else {
-                    const requestedStation = this.radioStationService.getRadioStationFromInput(content);
                     const newQueue = yield QueueContruct_1.QueueContruct.create({ guildId: guildId, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: requestedStation });
                     this.radioQueue.set(guildId, newQueue);
                     this.playRadio(guildId, requestedStation);
