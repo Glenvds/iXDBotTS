@@ -193,7 +193,7 @@ export class MusicBot {
 
 
 
-    //RADIO SHIT
+    //RADIO
 
     private async startRadio(message: Message) {
         const content = this.getContentOutOfMessage(message);
@@ -204,7 +204,7 @@ export class MusicBot {
 
         if (!content) {
             if (this.isRadioPlaying) {
-                const currentRadioStation: RadioStation = this.radioQueue.get(guildId);
+                const currentRadioStation: RadioStation = this.queue.get(guildId);
                 this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Currently playing radio station: " + currentRadioStation.name + ". \n"));
             } else {
                 this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n"));
@@ -216,7 +216,7 @@ export class MusicBot {
                 this.playRadio(guildId, requestedStation);
             } else {                
                 const newQueue = await QueueContruct.create({ guildId: guildId, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: requestedStation });
-                this.radioQueue.set(guildId, newQueue);
+                this.queue.set(guildId, newQueue);
                 this.playRadio(guildId, requestedStation);
             }
         }
@@ -224,8 +224,11 @@ export class MusicBot {
 
     private async playRadio(guildId: string, radioStation: RadioStation) {
         this.isRadioPlaying = true;
-        const serverQueue = this.radioQueue.get(guildId) as QueueContruct;
-        const dispatcher = serverQueue.getConnection().play(radioStation.url);
+        const serverQueue = this.queue.get(guildId) as QueueContruct;
+        const dispatcher = serverQueue.getConnection().play(radioStation.url)
+        .on("start", () => {
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Started playing radio station: " + radioStation.name);
+        });
     }
 
 

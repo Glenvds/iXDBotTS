@@ -217,7 +217,7 @@ let MusicBot = class MusicBot {
             return;
         }
     }
-    //RADIO SHIT
+    //RADIO
     startRadio(message) {
         return __awaiter(this, void 0, void 0, function* () {
             const content = this.getContentOutOfMessage(message);
@@ -227,7 +227,7 @@ let MusicBot = class MusicBot {
             const requestedStation = this.radioStationService.getRadioStationFromInput(content);
             if (!content) {
                 if (this.isRadioPlaying) {
-                    const currentRadioStation = this.radioQueue.get(guildId);
+                    const currentRadioStation = this.queue.get(guildId);
                     this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Currently playing radio station: " + currentRadioStation.name + ". \n"));
                 }
                 else {
@@ -243,7 +243,7 @@ let MusicBot = class MusicBot {
                 }
                 else {
                     const newQueue = yield QueueContruct_1.QueueContruct.create({ guildId: guildId, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: requestedStation });
-                    this.radioQueue.set(guildId, newQueue);
+                    this.queue.set(guildId, newQueue);
                     this.playRadio(guildId, requestedStation);
                 }
             }
@@ -252,8 +252,11 @@ let MusicBot = class MusicBot {
     playRadio(guildId, radioStation) {
         return __awaiter(this, void 0, void 0, function* () {
             this.isRadioPlaying = true;
-            const serverQueue = this.radioQueue.get(guildId);
-            const dispatcher = serverQueue.getConnection().play(radioStation.url);
+            const serverQueue = this.queue.get(guildId);
+            const dispatcher = serverQueue.getConnection().play(radioStation.url)
+                .on("start", () => {
+                this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Started playing radio station: " + radioStation.name);
+            });
         });
     }
 };
