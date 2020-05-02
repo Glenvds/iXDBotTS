@@ -166,6 +166,9 @@ let MusicBot = class MusicBot {
     play(guild, song) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverQueue = this.queue.get(guild.id);
+            if (!serverQueue) {
+                return;
+            }
             if (!song) {
                 this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
                 this.isMusicPlaying = false;

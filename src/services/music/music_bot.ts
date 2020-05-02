@@ -139,6 +139,10 @@ export class MusicBot {
     private async play(guild: Guild, song: Song) {
         const serverQueue = this.queue.get(guild.id) as QueueContruct;
 
+        if(!serverQueue){
+            return;
+        }
+
         if (!song) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
             this.isMusicPlaying = false;
@@ -190,7 +194,7 @@ export class MusicBot {
         } else if (this.isRadioPlaying) {
             this.isRadioPlaying = false;
         }
-        
+
         serverQueue.getConnection().dispatcher.end();
         this.queue.delete(message.guild.id);
     }
