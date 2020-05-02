@@ -45,7 +45,8 @@ export class MusicBot {
         let song: Song;
 
         if(this.isRadioPlaying){
-            this.messageResponder.sendResponseToChannel(textChannel, "Can't queue songs while radio is playing! Use !stop to stop the radio.")
+            this.messageResponder.sendResponseToChannel(textChannel, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
+            return;
         }
 
         if (!contentOfMessage) {
@@ -65,7 +66,7 @@ export class MusicBot {
             try {
                 const queueContruct = await QueueContruct.create({ guildId: message.guild.id, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: song });
                 this.addNewServerQueueToMainQueue(queueContruct)
-                this.play(message.guild, queueContruct.songs[0]);
+                this.play(message.guild, queueContruct.songs[0] as Song);
             } catch (err) {
                 console.log("Error in playQueue while setting up queue: " + err);
             }
@@ -149,7 +150,7 @@ export class MusicBot {
                 .on("finish", () => {
                     console.log(song.title + " ended playing");
                     serverQueue.songs.shift();
-                    this.play(guild, serverQueue.songs[0])
+                    this.play(guild, serverQueue.songs[0] as Song)
                 });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         } catch (err) {

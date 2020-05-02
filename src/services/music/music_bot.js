@@ -73,6 +73,7 @@ let MusicBot = class MusicBot {
             let song;
             if (this.isRadioPlaying) {
                 this.messageResponder.sendResponseToChannel(textChannel, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
+                return;
             }
             if (!contentOfMessage) {
                 this.messageResponder.sendMultipleLineResponseToChannel(textChannel, "Need to give a YouTube-url or YouTube search string to play a song. \n Ex.: '!play linkin park numb' or '!play https://youtu.be/kXYiU_JCYtU'");

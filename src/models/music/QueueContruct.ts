@@ -12,7 +12,7 @@ export class QueueContructOptions{
 
 @injectable()
 export class QueueContruct extends QueueContructOptions {
-    songs = new Array<Song>();
+    songs = new Array<Song | RadioStation>();
     volume: number;
     private connection: VoiceConnection;
 
