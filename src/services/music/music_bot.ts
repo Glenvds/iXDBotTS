@@ -89,6 +89,10 @@ export class MusicBot {
             return;
         }
 
+        if(this.isRadioPlaying){
+            this.messageResponder.sendResponseToChannel(textChannel, "Current radio station playing: " + serverQueue.songs[0]);
+            return;
+        }
 
 
         let text = "--- Music queue ---\n\n";
