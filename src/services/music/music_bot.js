@@ -41,22 +41,21 @@ let MusicBot = class MusicBot {
         this.isRadioPlaying = false;
     }
     executeMusicCommand(command, message) {
-        const serverQueue = this.queue.get(message.guild.id);
         switch (command.textCommand) {
             case "play":
-                this.playQueue(serverQueue, message);
+                this.playQueue(message);
                 break;
             case "skip":
-                this.skip(serverQueue);
+                this.skip(message);
                 break;
             case "next":
-                this.skip(serverQueue);
+                this.skip(message);
                 break;
             case "stop":
-                this.stop(serverQueue);
+                this.stop(message);
                 break;
             case "queue":
-                this.getQueue(serverQueue);
+                this.getQueue(message);
                 break;
             case "radio":
                 this.startRadio(message);
@@ -65,8 +64,9 @@ let MusicBot = class MusicBot {
     }
     //PRIVATE METHODS
     //MANAGING QUEUES
-    playQueue(serverQueue, message) {
+    playQueue(message) {
         return __awaiter(this, void 0, void 0, function* () {
+            const serverQueue = this.queue.get(message.guild.id);
             const voiceChannel = message.member.voice.channel;
             const textChannel = message.channel;
             const contentOfMessage = this.getContentOutOfMessage(message);
@@ -104,7 +104,8 @@ let MusicBot = class MusicBot {
             this.queue.set(serverQueue.guildId, serverQueue);
         });
     }
-    getQueue(serverQueue) {
+    getQueue(message) {
+        const serverQueue = this.queue.get(message.guild.id);
         let text = "--- Music queue ---\n\n";
         serverQueue.songs.forEach((song, index) => {
             if (index === 0) {
@@ -175,7 +176,8 @@ let MusicBot = class MusicBot {
             }
         });
     }
-    skip(serverQueue) {
+    skip(message) {
+        const serverQueue = this.queue.get(message.guild.id);
         if (!serverQueue) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There are no songs to skip!");
         }
@@ -183,9 +185,11 @@ let MusicBot = class MusicBot {
             serverQueue.getConnection().dispatcher.end();
         }
     }
-    stop(serverQueue) {
+    stop(message) {
+        const serverQueue = this.queue.get(message.guild.id);
+        const textChannel = message.channel;
         if (!serverQueue) {
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
+            this.messageResponder.sendResponseToChannel(textChannel, "There is nothing to stop!");
             return;
         }
         if (this.isMusicPlaying) {

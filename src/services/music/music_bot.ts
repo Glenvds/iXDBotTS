@@ -25,20 +25,20 @@ export class MusicBot {
         @inject(TYPES.RadioStationService) private radioStationService: RadioStationService) { }
 
     executeMusicCommand(command: Command, message: Message) {
-        const serverQueue: QueueContruct = this.queue.get(message.guild.id);
         switch (command.textCommand) {
-            case "play": this.playQueue(serverQueue, message); break;
-            case "skip": this.skip(serverQueue); break;
-            case "next": this.skip(serverQueue); break;
-            case "stop": this.stop(serverQueue); break;
-            case "queue": this.getQueue(serverQueue); break;
+            case "play": this.playQueue(message); break;
+            case "skip": this.skip(message); break;
+            case "next": this.skip(message); break;
+            case "stop": this.stop(message); break;
+            case "queue": this.getQueue(message); break;
             case "radio": this.startRadio(message); break;
         }
     }
 
     //PRIVATE METHODS
     //MANAGING QUEUES
-    private async playQueue(serverQueue: QueueContruct, message: Message) {
+    private async playQueue(message: Message) {
+        const serverQueue: QueueContruct = this.queue.get(message.guild.id);
         const voiceChannel: VoiceChannel = message.member.voice.channel;
         const textChannel: TextChannel = message.channel as TextChannel;
         const contentOfMessage: string = this.getContentOutOfMessage(message);
@@ -76,7 +76,8 @@ export class MusicBot {
         this.queue.set(serverQueue.guildId, serverQueue);
     }
 
-    private getQueue(serverQueue: QueueContruct) {
+    private getQueue(message: Message) {
+        const serverQueue: QueueContruct = this.queue.get(message.guild.id);
         let text = "--- Music queue ---\n\n";
         serverQueue.songs.forEach((song: Song, index: number) => {
             if (index === 0) {
@@ -144,7 +145,8 @@ export class MusicBot {
         }
     }
 
-    private skip(serverQueue: QueueContruct) {
+    private skip(message: Message) {
+        const serverQueue: QueueContruct = this.queue.get(message.guild.id);
         if (!serverQueue) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There are no songs to skip!");
         } else {
@@ -152,9 +154,11 @@ export class MusicBot {
         }
     }
 
-    private stop(serverQueue: QueueContruct) {
+    private stop(message: Message) {
+        const serverQueue: QueueContruct = this.queue.get(message.guild.id);
+        const textChannel = message.channel as TextChannel;
         if (!serverQueue) {
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
+            this.messageResponder.sendResponseToChannel(textChannel, "There is nothing to stop!");
             return;
         }
 
