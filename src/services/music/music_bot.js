@@ -116,8 +116,8 @@ let MusicBot = class MusicBot {
             return;
         }
         if (this.isRadioPlaying) {
-            const currentRadioStation = serverQueue.songs;
-            this.messageResponder.sendResponseToChannel(textChannel, "Current radio station playing: " + serverQueue.songs[0]);
+            const currentRadioStation = serverQueue.songs[0];
+            this.messageResponder.sendResponseToChannel(textChannel, "Current radio station playing: " + currentRadioStation.name);
             return;
         }
         let text = "--- Music queue ---\n\n";
@@ -213,14 +213,12 @@ let MusicBot = class MusicBot {
         }
         if (this.isMusicPlaying) {
             this.isMusicPlaying = false;
-            serverQueue.emptySongs();
-            serverQueue.getConnection().dispatcher.end();
         }
         else if (this.isRadioPlaying) {
             this.isRadioPlaying = false;
-            serverQueue.emptySongs();
-            serverQueue.getConnection().dispatcher.end();
         }
+        serverQueue.getConnection().dispatcher.end();
+        this.queue.delete(message.guild.id);
     }
     getContentOutOfMessage(message) {
         if (message.content.indexOf(' ') !== -1) {
