@@ -108,7 +108,7 @@ export class MusicBot {
             const requestURL: string = await this.getSongUrl(contentOfmessage);
             const songInfo: iVideoInfo = await this.ytService.getInfoStreamYoutube(requestURL);
             return new Song(songInfo.title, songInfo.video_url, author);
-        } catch (err) {
+        } catch (err) {            
             console.log("Error in getSong(): " + err);
         }
     }
@@ -155,7 +155,11 @@ export class MusicBot {
 
     private skip(message: Message) {
         const serverQueue: QueueContruct = this.queue.get(message.guild.id);
-        const textChannel = message.channel as TextChannel;
+        const textChannel = message.channel as TextChannel;        
+        if(this.isRadioPlaying){
+            this.messageResponder.sendResponseToChannel(textChannel, "Can't use skip command while radio is playing!");
+            return;
+        }
         if (!serverQueue) {
             this.messageResponder.sendResponseToChannel(textChannel, "There are no songs to skip!");
         } else {

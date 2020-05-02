@@ -184,6 +184,10 @@ let MusicBot = class MusicBot {
     skip(message) {
         const serverQueue = this.queue.get(message.guild.id);
         const textChannel = message.channel;
+        if (this.isRadioPlaying) {
+            this.messageResponder.sendResponseToChannel(textChannel, "Can't use skip command while radio is playing!");
+            return;
+        }
         if (!serverQueue) {
             this.messageResponder.sendResponseToChannel(textChannel, "There are no songs to skip!");
         }
