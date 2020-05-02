@@ -16,7 +16,7 @@ export class RadioStationService{
     getPossibleRadioStationsAsString(startMessage: string): string{
         let returnString = startMessage;
         this.RADIO_STATIONS.forEach((station) => {
-            returnString = returnString.concat("- " + station.name);
+            returnString = returnString.concat("- " + station.name + "\n");
         });
         return returnString;
     }

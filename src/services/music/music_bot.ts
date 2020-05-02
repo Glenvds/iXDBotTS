@@ -153,9 +153,21 @@ export class MusicBot {
     }
 
     private stop(serverQueue: QueueContruct) {
-        this.isMusicPlaying = false;
-        serverQueue.emptySongs();
-        serverQueue.getConnection().dispatcher.end();
+        if(this.isMusicPlaying){
+            this.isMusicPlaying = false;
+            serverQueue.emptySongs();
+            serverQueue.getConnection().dispatcher.end();
+        } else if(this.isRadioPlaying){
+            this.isRadioPlaying = false;
+            serverQueue.emptySongs();
+            serverQueue.getConnection().dispatcher.end();
+        } else{
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
+        }
+
+
+
+    
     }
 
     private getContentOutOfMessage(message: Message): string {
@@ -199,14 +211,9 @@ export class MusicBot {
     }
 
     private async playRadio(guildId: string, radioStation: RadioStation){
+        this.isRadioPlaying = true;
         const serverQueue = this.radioQueue.get(guildId) as QueueContruct;
-        console.log("serverqueue: " + serverQueue);
-  
-
-
         const dispatcher = serverQueue.getConnection().play(radioStation.url);
-
-
     }
 
 

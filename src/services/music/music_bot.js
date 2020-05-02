@@ -184,9 +184,19 @@ let MusicBot = class MusicBot {
         }
     }
     stop(serverQueue) {
-        this.isMusicPlaying = false;
-        serverQueue.emptySongs();
-        serverQueue.getConnection().dispatcher.end();
+        if (this.isMusicPlaying) {
+            this.isMusicPlaying = false;
+            serverQueue.emptySongs();
+            serverQueue.getConnection().dispatcher.end();
+        }
+        else if (this.isRadioPlaying) {
+            this.isRadioPlaying = false;
+            serverQueue.emptySongs();
+            serverQueue.getConnection().dispatcher.end();
+        }
+        else {
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
+        }
     }
     getContentOutOfMessage(message) {
         if (message.content.indexOf(' ') !== -1) {
@@ -230,8 +240,8 @@ let MusicBot = class MusicBot {
     }
     playRadio(guildId, radioStation) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.isRadioPlaying = true;
             const serverQueue = this.radioQueue.get(guildId);
-            console.log("serverqueue: " + serverQueue);
             const dispatcher = serverQueue.getConnection().play(radioStation.url);
         });
     }
