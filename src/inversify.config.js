@@ -12,6 +12,7 @@ const urlService_1 = require("./services/general/urlService");
 const ytService_1 = require("./services/music/ytService");
 const music_bot_1 = require("./services/music/music_bot");
 const nsfw_bot_1 = require("./services/nsfw/nsfw_bot");
+const radioStationService_1 = require("./services/music/radioStationService");
 let container = new inversify_1.Container();
 container.bind(types_1.TYPES.Bot).to(bot_1.Bot).inSingletonScope();
 container.bind(types_1.TYPES.Client).toConstantValue(new discord_js_1.Client());
@@ -23,5 +24,6 @@ container.bind(types_1.TYPES.urlService).to(urlService_1.urlService).inSingleton
 container.bind(types_1.TYPES.ytService).to(ytService_1.ytService).inSingletonScope();
 container.bind(types_1.TYPES.MusicBot).to(music_bot_1.MusicBot).inSingletonScope();
 container.bind(types_1.TYPES.NSFWBot).to(nsfw_bot_1.NSFWBot).inSingletonScope();
+container.bind(types_1.TYPES.RadioStationService).to(radioStationService_1.RadioStationService).inSingletonScope();
 exports.default = container;
 //# sourceMappingURL=inversify.config.js.map

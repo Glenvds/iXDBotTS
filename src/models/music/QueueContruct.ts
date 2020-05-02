@@ -1,12 +1,13 @@
 import { injectable } from "inversify";
 import { VoiceChannel, TextChannel, VoiceConnection, IntegrationEditData, Message, Guild } from "discord.js";
 import { Song } from "./song";
+import { RadioStation } from "./radioStation";
 
 export class QueueContructOptions{
     guildId: string;
     textChannel: TextChannel;
     voiceChannel: VoiceChannel;
-    firstSong: Song;
+    firstPlay: Song | RadioStation;
 }
 
 @injectable()
@@ -18,7 +19,9 @@ export class QueueContruct extends QueueContructOptions {
     private constructor(options: QueueContructOptions){
         super();
         Object.assign(this, options);
-        this.addSong(this.firstSong);
+        if(this.firstPlay instanceof Song){
+            this.addSong(this.firstPlay);
+        }        
         this.volume = 5;
     }
 

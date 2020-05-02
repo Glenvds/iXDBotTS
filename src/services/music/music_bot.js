@@ -28,12 +28,17 @@ const urlService_1 = require("../general/urlService");
 const ytService_1 = require("./ytService");
 const song_1 = require("../../models/music/song");
 const message_responder_1 = require("../general/message-responder");
+const radioStationService_1 = require("./radioStationService");
 let MusicBot = class MusicBot {
-    constructor(urlService, ytService, messageResponder) {
+    constructor(urlService, ytService, messageResponder, radioStationService) {
         this.urlService = urlService;
         this.ytService = ytService;
         this.messageResponder = messageResponder;
+        this.radioStationService = radioStationService;
         this.queue = new Map();
+        this.radioQueue = new Map();
+        this.isMusicPlaying = false;
+        this.isRadioPlaying = false;
     }
     executeMusicCommand(command, message) {
         const serverQueue = this.queue.get(message.guild.id);
@@ -53,7 +58,9 @@ let MusicBot = class MusicBot {
             case "queue":
                 this.getQueue(serverQueue);
                 break;
-            //case "radio": this.playRadio(message); break;
+            case "radio":
+                this.startRadio(message);
+                break;
         }
     }
     //PRIVATE METHODS
@@ -61,17 +68,24 @@ let MusicBot = class MusicBot {
     playQueue(serverQueue, message) {
         return __awaiter(this, void 0, void 0, function* () {
             const voiceChannel = message.member.voice.channel;
+            const textChannel = message.channel;
             const contentOfMessage = this.getContentOutOfMessage(message);
             let song;
+            if (!contentOfMessage) {
+                this.messageResponder.sendMultipleLineResponseToChannel(textChannel, "Need to give a YouTube-url or YouTube search string to play a song. \n Ex.: '!play linkin park numb' or '!play https://youtu.be/kXYiU_JCYtU'");
+                return;
+            }
             try {
                 song = yield this.getSong(contentOfMessage, message.author);
             }
             catch (err) {
+                this.messageResponder.sendResponseToChannel(textChannel, "No video found with that search string");
                 console.log("Error in playQueue getSong(): " + err);
+                return;
             }
             if (!serverQueue) {
                 try {
-                    const queueContruct = yield QueueContruct_1.QueueContruct.create({ guildId: message.guild.id, textChannel: message.channel, voiceChannel: voiceChannel, firstSong: song });
+                    const queueContruct = yield QueueContruct_1.QueueContruct.create({ guildId: message.guild.id, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: song });
                     this.addNewServerQueueToMainQueue(queueContruct);
                     this.play(message.guild, queueContruct.songs[0]);
                 }
@@ -81,7 +95,7 @@ let MusicBot = class MusicBot {
             }
             else {
                 serverQueue.addSong(song);
-                this.messageResponder.sendResponseToChannel(message.channel, `${song.title} has been added to the queue`); //ADD USERNAME TO RESPONSE
+                this.messageResponder.sendResponseToChannel(textChannel, `${song.title} has been added to the queue`); //ADD USERNAME TO RESPONSE
             }
         });
     }
@@ -91,16 +105,15 @@ let MusicBot = class MusicBot {
         });
     }
     getQueue(serverQueue) {
-        let text = "```--- Music queue ---\n\n";
+        let text = "--- Music queue ---\n\n";
         serverQueue.songs.forEach((song, index) => {
             if (index === 0) {
                 text = text.concat("Now playing: " + song.title + " | Requested by: " + song.requester.username + "\n\n");
             }
             else {
-                text = text.concat(index + ". " + song.title + " | Requested by: " + song.requester + "\n");
+                text = text.concat(index + ". " + song.title + " | Requested by: " + song.requester.username + "\n");
             }
         });
-        text = text.concat("```");
         this.messageResponder.sendMultipleLineResponseToChannel(serverQueue.textChannel, text);
     }
     removeGuildQueue(guild) {
@@ -140,11 +153,13 @@ let MusicBot = class MusicBot {
             const serverQueue = this.queue.get(guild.id);
             if (!song) {
                 this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
+                this.isMusicPlaying = false;
                 serverQueue.voiceChannel.leave();
-                this.queue.delete(guild.id);
+                this.removeGuildQueue(guild);
                 return;
             }
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${song.title}. Request by ${song.requester.username}`);
+            this.isMusicPlaying = true;
             try {
                 const ytStream = yield this.ytService.getStreamYoutube(song);
                 const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
@@ -169,12 +184,56 @@ let MusicBot = class MusicBot {
         }
     }
     stop(serverQueue) {
-        this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Deleted my queue, I'm out.");
+        this.isMusicPlaying = false;
         serverQueue.emptySongs();
         serverQueue.getConnection().dispatcher.end();
     }
     getContentOutOfMessage(message) {
-        return message.content.substring(message.content.indexOf(' ') + 1);
+        if (message.content.indexOf(' ') !== -1) {
+            return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();
+        }
+        else {
+            return;
+        }
+    }
+    //RADIO SHIT
+    startRadio(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const content = this.getContentOutOfMessage(message);
+            const voiceChannel = message.member.voice.channel;
+            const textChannel = message.channel;
+            const guildId = message.guild.id;
+            if (!content) {
+                if (this.isRadioPlaying) {
+                    const currentRadioStation = this.radioQueue.get(guildId);
+                    this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Currently playing radio station: " + currentRadioStation.name + ". \n"));
+                }
+                else {
+                    this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n"));
+                }
+            }
+            else {
+                if (this.isMusicPlaying) {
+                    this.messageResponder.sendResponseToChannel(textChannel, "Music is already playing. First stop playing music(!stop).");
+                }
+                else if (this.isRadioPlaying) {
+                    //CHANGE STATION
+                }
+                else {
+                    const requestedStation = this.radioStationService.getRadioStationFromInput(content);
+                    const newQueue = yield QueueContruct_1.QueueContruct.create({ guildId: guildId, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: requestedStation });
+                    this.radioQueue.set(guildId, newQueue);
+                    this.playRadio(guildId, requestedStation);
+                }
+            }
+        });
+    }
+    playRadio(guildId, radioStation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverQueue = this.radioQueue.get(guildId);
+            console.log("serverqueue: " + serverQueue);
+            const dispatcher = serverQueue.getConnection().play(radioStation.url);
+        });
     }
 };
 MusicBot = __decorate([
@@ -182,9 +241,17 @@ MusicBot = __decorate([
     __param(0, inversify_1.inject(types_1.TYPES.urlService)),
     __param(1, inversify_1.inject(types_1.TYPES.ytService)),
     __param(2, inversify_1.inject(types_1.TYPES.MessageResponder)),
+    __param(3, inversify_1.inject(types_1.TYPES.RadioStationService)),
     __metadata("design:paramtypes", [urlService_1.urlService,
         ytService_1.ytService,
-        message_responder_1.MessageResponder])
+        message_responder_1.MessageResponder,
+        radioStationService_1.RadioStationService])
 ], MusicBot);
 exports.MusicBot = MusicBot;
+/*
+EMPTY PLAY?
+ADD RADIO OPTIONS
+
+
+*/ 
 //# sourceMappingURL=music_bot.js.map

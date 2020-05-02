@@ -16,6 +16,6 @@ export class MessageResponder{
     }
 
     sendMultipleLineResponseToChannel(channel: TextChannel, text: string): Promise<Message | Message[]>{
-        return channel.send(text);
+        return channel.send("```" + text + "```");
     }
 }

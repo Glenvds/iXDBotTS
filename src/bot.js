@@ -30,6 +30,7 @@ let Bot = class Bot {
         this.NSFWBot = NSFWBot;
         this.prefix = "!";
         this.iXDmusicChannelId = "312940674133655552";
+        this.testiXDmusicChannelId = "706069227613978634";
     }
     listen() {
         this.client.on("message", (message) => {
@@ -43,7 +44,7 @@ let Bot = class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case command_1.CommandType.Music:
-                        if (msgTextChannel.id !== this.iXDmusicChannelId) {
+                        if (msgTextChannel.id !== this.testiXDmusicChannelId) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {

@@ -10,22 +10,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-let MessageResponder = class MessageResponder {
-    constructor() {
-    }
-    sendResponseToChannel(channel, text) {
-        return channel.send("`" + text + "`");
-    }
-    sendURLToChannel(channel, url) {
-        return channel.send(url);
-    }
-    sendMultipleLineResponseToChannel(channel, text) {
-        return channel.send("```" + text + "```");
+class RadioStationOptions {
+}
+exports.RadioStationOptions = RadioStationOptions;
+let RadioStation = class RadioStation extends RadioStationOptions {
+    constructor(options) {
+        super();
+        Object.assign(this, options);
     }
 };
-MessageResponder = __decorate([
+RadioStation = __decorate([
     inversify_1.injectable(),
-    __metadata("design:paramtypes", [])
-], MessageResponder);
-exports.MessageResponder = MessageResponder;
-//# sourceMappingURL=message-responder.js.map
+    __metadata("design:paramtypes", [RadioStationOptions])
+], RadioStation);
+exports.RadioStation = RadioStation;
+//# sourceMappingURL=radioStation.js.map

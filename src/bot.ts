@@ -11,6 +11,7 @@ import { NSFWBot } from "./services/nsfw/nsfw_bot";
 export class Bot {
     private prefix: string = "!";
     private iXDmusicChannelId = "312940674133655552"
+    private testiXDmusicChannelId = "706069227613978634"
 
     constructor(@inject(TYPES.Client) private client: Client,
         @inject(TYPES.Token) private readonly token: string,
@@ -33,7 +34,7 @@ export class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case CommandType.Music:
-                        if (msgTextChannel.id !== this.iXDmusicChannelId) {
+                        if (msgTextChannel.id !== this.testiXDmusicChannelId) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {

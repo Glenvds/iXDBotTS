@@ -12,6 +12,8 @@ import { urlService } from "./services/general/urlService";
 import { ytService } from "./services/music/ytService";
 import { MusicBot } from "./services/music/music_bot";
 import { NSFWBot } from "./services/nsfw/nsfw_bot";
+import { RadioStationOptions } from "./models/music/radioStation";
+import { RadioStationService } from "./services/music/radioStationService";
 
 let container = new Container();
 
@@ -25,5 +27,6 @@ container.bind<urlService>(TYPES.urlService).to(urlService).inSingletonScope();
 container.bind<ytService>(TYPES.ytService).to(ytService).inSingletonScope();
 container.bind<MusicBot>(TYPES.MusicBot).to(MusicBot).inSingletonScope();
 container.bind<NSFWBot>(TYPES.NSFWBot).to(NSFWBot).inSingletonScope();
+container.bind<RadioStationService>(TYPES.RadioStationService).to(RadioStationService).inSingletonScope();
 
 export default container;

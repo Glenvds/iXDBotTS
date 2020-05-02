@@ -23,7 +23,6 @@ export class ytService {
     async getInfoStreamYoutube(url: string): Promise<iVideoInfo> {
         const result = await ytdl.getInfo(url);
         return result;
-
     }
 
     async getStreamYoutube(song: Song): Promise<Readable> {

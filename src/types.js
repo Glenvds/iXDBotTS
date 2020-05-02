@@ -12,6 +12,7 @@ exports.TYPES = {
     urlService: Symbol("urlService"),
     ytService: Symbol("ytService"),
     MusicBot: Symbol("MusicBot"),
-    NSFWBot: Symbol("NSFWBot")
+    NSFWBot: Symbol("NSFWBot"),
+    RadioStationService: Symbol("RadioStationService")
 };
 //# sourceMappingURL=types.js.map
