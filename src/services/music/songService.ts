@@ -25,6 +25,7 @@ export class SongService {
             }
         } catch (err) {
             console.log("Error in getSong() while getting song url: " + err);
+            return;
         }
     }
 

@@ -10,8 +10,8 @@ import { NSFWBot } from "./services/nsfw/nsfw_bot";
 @injectable()
 export class Bot {
     private prefix: string = "!";
-    private iXDmusicChannelId = "312940674133655552"
-    //private testiXDmusicChannelId = "706069227613978634"
+    //private iXDmusicChannelId = "312940674133655552"
+    private iXDmusicChannelId = "706069227613978634"
 
     constructor(@inject(TYPES.Client) private client: Client,
         @inject(TYPES.Token) private readonly token: string,
