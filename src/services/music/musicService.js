@@ -41,7 +41,7 @@ let MusicService = class MusicService {
             new music_1.Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: music_1.MusicTypes.Radio }),
             new music_1.Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio })
         ];
-        this.musicDecibels = 1;
+        this.musicDecibels = 0.5;
     }
     playSong(message) {
         return __awaiter(this, void 0, void 0, function* () {
