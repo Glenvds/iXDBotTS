@@ -99,7 +99,7 @@ let MusicService = class MusicService {
                 serverQueue.voiceChannel.leave();
                 this.queueService.removeServerQueue(guildId);
             }
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester}`);
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
             if (music.type === music_1.MusicTypes.Song) {
                 const ytStream = yield this.ytService.getStreamYoutube(music);
                 const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })

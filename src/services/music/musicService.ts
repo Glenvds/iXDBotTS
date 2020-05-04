@@ -75,7 +75,7 @@ export class MusicService {
             this.queueService.removeServerQueue(guildId);
         }
 
-        this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester}`);
+        this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
 
         if (music.type === MusicTypes.Song) {
             const ytStream = await this.ytService.getStreamYoutube(music);
