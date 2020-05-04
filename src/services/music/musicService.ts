@@ -21,7 +21,7 @@ export class MusicService {
         new Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio })
     ];
 
-    private musicDecibels = 0.1;
+    private musicDecibels = 0.05;
 
     constructor(@inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
         @inject(TYPES.SongService) private songService: SongService,
