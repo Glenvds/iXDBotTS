@@ -26,24 +26,24 @@ const types_1 = require("../../types");
 const QueueContruct_1 = require("../../models/music/QueueContruct");
 const urlService_1 = require("../general/urlService");
 const ytService_1 = require("./ytService");
-const song_1 = require("../../models/music/song");
 const message_responder_1 = require("../general/message-responder");
-const radioStationService_1 = require("./radioStationService");
+const queueService_1 = require("./queueService");
+const musicService_1 = require("./musicService");
 let MusicBot = class MusicBot {
-    constructor(urlService, ytService, messageResponder, radioStationService) {
+    constructor(urlService, ytService, messageResponder, queueService, musicService) {
         this.urlService = urlService;
         this.ytService = ytService;
         this.messageResponder = messageResponder;
-        this.radioStationService = radioStationService;
-        this.queue = new Map();
-        this.radioQueue = new Map();
-        this.isMusicPlaying = false;
-        this.isRadioPlaying = false;
+        this.queueService = queueService;
+        this.musicService = musicService;
     }
     executeMusicCommand(command, message) {
         switch (command.textCommand) {
             case "play":
-                this.playQueue(message);
+                this.playSong(message);
+                break;
+            case "radio":
+                this.playRadio(message);
                 break;
             case "skip":
                 this.skip(message);
@@ -57,221 +57,83 @@ let MusicBot = class MusicBot {
             case "queue":
                 this.getQueue(message);
                 break;
-            case "radio":
-                this.startRadio(message);
-                break;
         }
     }
-    //PRIVATE METHODS
-    //MANAGING QUEUES
-    playQueue(message) {
+    playSong(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const serverQueue = this.queue.get(message.guild.id);
-            const voiceChannel = message.member.voice.channel;
             const textChannel = message.channel;
-            const contentOfMessage = this.getContentOutOfMessage(message);
-            let song;
-            if (this.isRadioPlaying) {
-                this.messageResponder.sendResponseToChannel(textChannel, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
-                return;
-            }
+            const contentOfMessage = this.messageResponder.getContentOfMessage(message);
             if (!contentOfMessage) {
                 this.messageResponder.sendMultipleLineResponseToChannel(textChannel, "Need to give a YouTube-url or YouTube search string to play a song. \n Ex.: '!play linkin park numb' or '!play https://youtu.be/kXYiU_JCYtU'");
                 return;
             }
-            try {
-                song = yield this.getSong(contentOfMessage, message.author);
-            }
-            catch (err) {
-                this.messageResponder.sendResponseToChannel(textChannel, "No video found with that search string");
-                console.log("Error in playQueue getSong(): " + err);
-                return;
-            }
-            if (!serverQueue) {
-                try {
-                    const queueContruct = yield QueueContruct_1.QueueContruct.create({ guildId: message.guild.id, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: song });
-                    this.addNewServerQueueToMainQueue(queueContruct);
-                    this.play(message.guild, queueContruct.songs[0]);
-                }
-                catch (err) {
-                    console.log("Error in playQueue while setting up queue: " + err);
-                }
-            }
-            else {
-                serverQueue.addToQueue(song);
-                this.messageResponder.sendResponseToChannel(textChannel, `${song.title} has been added to the queue`); //ADD USERNAME TO RESPONSE
+            const serviceResult = yield this.musicService.playSong(message);
+            if (serviceResult) {
+                this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message);
             }
         });
     }
-    addNewServerQueueToMainQueue(serverQueue) {
+    playRadio(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.queue.set(serverQueue.guildId, serverQueue);
+            const textChannel = message.channel;
+            const contentOfMessage = this.messageResponder.getContentOfMessage(message);
+            if (!contentOfMessage) {
+                this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.musicService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n"));
+            }
+            const serviceResult = yield this.musicService.playRadio(message);
+            if (serviceResult) {
+                this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message);
+            }
         });
     }
     getQueue(message) {
-        const serverQueue = this.queue.get(message.guild.id);
+        const guildId = message.guild.id;
+        const serverQueue = this.queueService.getServerQueue(guildId);
         const textChannel = message.channel;
         if (!serverQueue) {
-            this.messageResponder.sendResponseToChannel(textChannel, "There is currently no queue! Start adding song with !play");
+            this.messageResponder.sendResponseToChannel(textChannel, "There is currently no queue! Start adding song with !play or play radio with !radio");
             return;
         }
-        if (this.isRadioPlaying) {
-            const currentRadioStation = serverQueue.songs[0];
-            this.messageResponder.sendResponseToChannel(textChannel, "Current radio station playing: " + currentRadioStation.name);
-            return;
-        }
-        let text = "--- Music queue ---\n\n";
-        serverQueue.songs.forEach((song, index) => {
-            if (index === 0) {
-                text = text.concat("Now playing: " + song.title + " | Requested by: " + song.requester.username + "\n\n");
-            }
-            else {
-                text = text.concat(index + ". " + song.title + " | Requested by: " + song.requester.username + "\n");
-            }
-        });
-        this.messageResponder.sendMultipleLineResponseToChannel(serverQueue.textChannel, text);
-    }
-    removeGuildQueue(guild) {
-        this.queue.delete(guild.id);
-    }
-    //MANAGING & PLAYING SONGS 
-    getSong(contentOfmessage, author) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const requestURL = yield this.getSongUrl(contentOfmessage);
-                const songInfo = yield this.ytService.getInfoStreamYoutube(requestURL);
-                return new song_1.Song(songInfo.title, songInfo.video_url, author);
-            }
-            catch (err) {
-                console.log("Error in getSong(): " + err);
-            }
-        });
-    }
-    getSongUrl(contentOfMessage) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (!this.urlService.isUrl(contentOfMessage)) {
-                    const result = yield this.ytService.searchYoutube(contentOfMessage);
-                    return result.items[0].link;
+        if (serverQueue.type === QueueContruct_1.QueueType.Song) {
+            let text = "--- Music queue ---\n\n";
+            serverQueue.songs.forEach((song, index) => {
+                if (index === 0) {
+                    text = text.concat("Now playing: " + song.title + " | Requested by: " + song.requester.username + "\n\n");
                 }
                 else {
-                    return contentOfMessage;
+                    text = text.concat(index + ". " + song.title + " | Requested by: " + song.requester.username + "\n");
                 }
-            }
-            catch (err) {
-                console.log("Error in getting song URL: " + err);
-            }
-        });
-    }
-    play(guild, song) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const serverQueue = this.queue.get(guild.id);
-            if (!serverQueue) {
-                return;
-            }
-            if (!song) {
-                this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving. Soai..");
-                this.isMusicPlaying = false;
-                serverQueue.voiceChannel.leave();
-                this.removeGuildQueue(guild);
-                return;
-            }
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${song.title}. Request by ${song.requester.username}`);
-            this.isMusicPlaying = true;
-            try {
-                const ytStream = yield this.ytService.getStreamYoutube(song);
-                const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
-                    .on("finish", () => {
-                    console.log(song.title + " ended playing");
-                    serverQueue.songs.shift();
-                    this.play(guild, serverQueue.songs[0]);
-                });
-                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-            }
-            catch (err) {
-                console.log("Error in play: " + err);
-            }
-        });
-    }
-    skip(message) {
-        const serverQueue = this.queue.get(message.guild.id);
-        const textChannel = message.channel;
-        if (this.isRadioPlaying) {
-            this.messageResponder.sendResponseToChannel(textChannel, "Can't use skip command while radio is playing!");
+            });
+            this.messageResponder.sendMultipleLineResponseToChannel(serverQueue.textChannel, text);
+        }
+        else if (serverQueue.type === QueueContruct_1.QueueType.Radio) {
+            const currentRadioStation = serverQueue.songs[0];
+            this.messageResponder.sendResponseToChannel(textChannel, "Current radio station playing: " + currentRadioStation.title);
             return;
         }
-        if (!serverQueue) {
-            this.messageResponder.sendResponseToChannel(textChannel, "There are no songs to skip!");
+    }
+    skip(message) {
+        const serverQueue = this.queueService.getServerQueue(message.guild.id);
+        if (serverQueue && serverQueue.type === QueueContruct_1.QueueType.Radio) {
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Can't use skip command while radio is playing!");
+            return;
+        }
+        else if (!serverQueue) {
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There are no songs to skip!");
         }
         else {
             serverQueue.getConnection().dispatcher.end();
         }
     }
     stop(message) {
-        const serverQueue = this.queue.get(message.guild.id);
-        const textChannel = message.channel;
+        const guildId = message.guild.id;
+        const serverQueue = this.queueService.getServerQueue(guildId);
         if (!serverQueue) {
-            this.messageResponder.sendResponseToChannel(textChannel, "There is nothing to stop!");
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
             return;
-        }
-        if (this.isMusicPlaying) {
-            this.isMusicPlaying = false;
-        }
-        else if (this.isRadioPlaying) {
-            this.isRadioPlaying = false;
         }
         serverQueue.getConnection().dispatcher.end();
-        this.queue.delete(message.guild.id);
-    }
-    getContentOutOfMessage(message) {
-        if (message.content.indexOf(' ') !== -1) {
-            return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();
-        }
-        else {
-            return;
-        }
-    }
-    //RADIO
-    startRadio(message) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const content = this.getContentOutOfMessage(message);
-            const voiceChannel = message.member.voice.channel;
-            const textChannel = message.channel;
-            const guildId = message.guild.id;
-            const requestedStation = this.radioStationService.getRadioStationFromInput(content);
-            if (!content) {
-                if (this.isRadioPlaying) {
-                    const currentRadioStation = this.queue.get(guildId);
-                    this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Currently playing radio station: " + currentRadioStation.name + ". \n"));
-                }
-                else {
-                    this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.radioStationService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n"));
-                }
-            }
-            else {
-                if (this.isMusicPlaying) {
-                    this.messageResponder.sendResponseToChannel(textChannel, "Music is already playing. First stop playing music(!stop).");
-                }
-                else if (this.isRadioPlaying) {
-                    this.playRadio(guildId, requestedStation);
-                }
-                else {
-                    const newQueue = yield QueueContruct_1.QueueContruct.create({ guildId: guildId, textChannel: textChannel, voiceChannel: voiceChannel, firstPlay: requestedStation });
-                    this.queue.set(guildId, newQueue);
-                    this.playRadio(guildId, requestedStation);
-                }
-            }
-        });
-    }
-    playRadio(guildId, radioStation) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.isRadioPlaying = true;
-            const serverQueue = this.queue.get(guildId);
-            const dispatcher = serverQueue.getConnection().play(radioStation.url)
-                .on("start", () => {
-                this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Started playing radio station: " + radioStation.name);
-            });
-        });
+        this.queueService.removeServerQueue(guildId);
     }
 };
 MusicBot = __decorate([
@@ -279,17 +141,13 @@ MusicBot = __decorate([
     __param(0, inversify_1.inject(types_1.TYPES.urlService)),
     __param(1, inversify_1.inject(types_1.TYPES.ytService)),
     __param(2, inversify_1.inject(types_1.TYPES.MessageResponder)),
-    __param(3, inversify_1.inject(types_1.TYPES.RadioStationService)),
+    __param(3, inversify_1.inject(types_1.TYPES.QueueService)),
+    __param(4, inversify_1.inject(types_1.TYPES.MusicService)),
     __metadata("design:paramtypes", [urlService_1.urlService,
         ytService_1.ytService,
         message_responder_1.MessageResponder,
-        radioStationService_1.RadioStationService])
+        queueService_1.QueueService,
+        musicService_1.MusicService])
 ], MusicBot);
 exports.MusicBot = MusicBot;
-/*
-EMPTY PLAY?
-ADD RADIO OPTIONS
-
-
-*/ 
 //# sourceMappingURL=music_bot.js.map

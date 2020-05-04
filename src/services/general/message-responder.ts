@@ -1,21 +1,29 @@
-import {Message, TextChannel} from "discord.js";
-import {inject, injectable} from "inversify";
+import { Message, TextChannel } from "discord.js";
+import { injectable } from "inversify";
 
 
 @injectable()
-export class MessageResponder{
-    constructor(){
+export class MessageResponder {
+    constructor() {
     }
 
-    sendResponseToChannel(channel: TextChannel, text: string): Promise<Message | Message[]>{
+    sendResponseToChannel(channel: TextChannel, text: string): Promise<Message | Message[]> {
         return channel.send("`" + text + "`");
     }
 
-    sendURLToChannel(channel: TextChannel, url: string): Promise<Message | Message[]>{
+    sendURLToChannel(channel: TextChannel, url: string): Promise<Message | Message[]> {
         return channel.send(url);
     }
 
-    sendMultipleLineResponseToChannel(channel: TextChannel, text: string): Promise<Message | Message[]>{
+    sendMultipleLineResponseToChannel(channel: TextChannel, text: string): Promise<Message | Message[]> {
         return channel.send("```" + text + "```");
+    }
+
+    getContentOfMessage(message: Message): string{
+        if (message.content.indexOf(' ') !== -1) {
+            return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();
+        } else {
+            return;
+        }
     }
 }

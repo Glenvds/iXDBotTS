@@ -17,59 +17,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var QueueContruct_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-var QueueType;
-(function (QueueType) {
-    QueueType["Radio"] = "radio";
-    QueueType["Song"] = "song";
-})(QueueType = exports.QueueType || (exports.QueueType = {}));
-class QueueContructOptions {
-}
-exports.QueueContructOptions = QueueContructOptions;
-let QueueContruct = QueueContruct_1 = class QueueContruct extends QueueContructOptions {
-    constructor(options) {
-        super();
-        this.songs = new Array();
-        Object.assign(this, options);
-        this.addToQueue(this.firstPlay);
-        this.volume = 5;
+const QueueContruct_1 = require("../../models/music/QueueContruct");
+let QueueService = class QueueService {
+    constructor() {
+        this.mainQueue = new Map();
     }
-    addToQueue(music) {
-        this.songs.push(music);
-    }
-    emptySongs() {
-        this.songs = [];
-    }
-    setConnection(connection) {
-        this.connection = connection;
-    }
-    getConnection() {
-        return this.connection;
-    }
-    static create(options) {
+    createMusicServerQueue(message, firstSong) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queueContruct = new QueueContruct_1(options);
-            const connection = yield queueContruct.setUpVoiceConnection(queueContruct.voiceChannel);
-            queueContruct.setConnection(connection);
-            return queueContruct;
+            const newQueue = yield QueueContruct_1.QueueContruct.create({ type: QueueContruct_1.QueueType.Song, guildId: message.guild.id, textChannel: message.channel, voiceChannel: message.member.voice.channel, firstPlay: firstSong });
+            this.addServerQueue(newQueue);
+            return newQueue;
         });
     }
-    setUpVoiceConnection(voiceChannel) {
+    createRadioServerQueue(message, firstRadioStation) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield voiceChannel.join();
-            }
-            catch (err) {
-                console.log("Error while setting up voice connection: " + err);
-            }
+            const newQueue = yield QueueContruct_1.QueueContruct.create({ type: QueueContruct_1.QueueType.Radio, guildId: message.guild.id, textChannel: message.channel, voiceChannel: message.member.voice.channel, firstPlay: firstRadioStation });
+            this.addServerQueue(newQueue);
+            return newQueue;
         });
+    }
+    addServerQueue(serverQueue) {
+        this.mainQueue.set(serverQueue.guildId, serverQueue);
+    }
+    getServerQueue(guildId) {
+        return this.mainQueue.get(guildId);
+    }
+    removeServerQueue(guildId) {
+        this.mainQueue.delete(guildId);
+    }
+    endServerQueue(guildId) {
     }
 };
-QueueContruct = QueueContruct_1 = __decorate([
+QueueService = __decorate([
     inversify_1.injectable(),
-    __metadata("design:paramtypes", [QueueContructOptions])
-], QueueContruct);
-exports.QueueContruct = QueueContruct;
-//# sourceMappingURL=QueueContruct.js.map
+    __metadata("design:paramtypes", [])
+], QueueService);
+exports.QueueService = QueueService;
+//# sourceMappingURL=queueService.js.map

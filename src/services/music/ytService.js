@@ -37,9 +37,9 @@ let ytService = class ytService {
             return result;
         });
     }
-    getStreamYoutube(song) {
+    getStreamYoutube(music) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield ytdl(song.url);
+            return yield ytdl(music.url);
         });
     }
 };

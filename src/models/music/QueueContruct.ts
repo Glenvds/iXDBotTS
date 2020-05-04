@@ -1,18 +1,24 @@
 import { injectable } from "inversify";
 import { VoiceChannel, TextChannel, VoiceConnection, IntegrationEditData, Message, Guild } from "discord.js";
-import { Song } from "./song";
-import { RadioStation } from "./radioStation";
+import { Music } from "./music";
+
+
+export enum QueueType{
+    Radio = "radio",
+    Song = "song"
+}
 
 export class QueueContructOptions{
     guildId: string;
+    type: QueueType;
     textChannel: TextChannel;
     voiceChannel: VoiceChannel;
-    firstPlay: Song | RadioStation;
+    firstPlay: Music;
 }
 
 @injectable()
 export class QueueContruct extends QueueContructOptions {
-    songs = new Array<Song | RadioStation>();
+    songs = new Array<Music>();
     volume: number;
     private connection: VoiceConnection;
 
@@ -23,7 +29,7 @@ export class QueueContruct extends QueueContructOptions {
         this.volume = 5;
     }
 
-    addToQueue(music: Song | RadioStation) {
+    addToQueue(music: Music) {
         this.songs.push(music);
     }
 

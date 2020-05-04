@@ -3,8 +3,9 @@ import { iYtsr } from "../../interfaces/iYtsr";
 import { iVideoInfo } from "../../interfaces/iVideoInfo";
 //import * as ytsr from 'ytsr';
 //import * as ytdl from 'ytdl-core-discord';
-import { Song } from "../../models/music/song";
+
 import { Readable } from "stream";
+import { Music } from "../../models/music/music";
 const ytsr = require('ytsr');
 const ytdl = require('ytdl-core-discord');
 //import { ytdl } from "ytdl-core-discord";
@@ -25,7 +26,7 @@ export class ytService {
         return result;
     }
 
-    async getStreamYoutube(song: Song): Promise<Readable> {
-        return await ytdl(song.url);
+    async getStreamYoutube(music: Music): Promise<Readable> {
+        return await ytdl(music.url);
     }
 }

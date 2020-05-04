@@ -22,6 +22,14 @@ let MessageResponder = class MessageResponder {
     sendMultipleLineResponseToChannel(channel, text) {
         return channel.send("```" + text + "```");
     }
+    getContentOfMessage(message) {
+        if (message.content.indexOf(' ') !== -1) {
+            return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();
+        }
+        else {
+            return;
+        }
+    }
 };
 MessageResponder = __decorate([
     inversify_1.injectable(),

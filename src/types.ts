@@ -11,5 +11,9 @@ export const TYPES = {
     ytService: Symbol("ytService"),
     MusicBot: Symbol("MusicBot"),
     NSFWBot: Symbol("NSFWBot"),
-    RadioStationService: Symbol("RadioStationService")
+    RadioStationService: Symbol("RadioStationService"),
+    QueueService: Symbol("QueueService"),
+    MusicService: Symbol("MusicService"),
+    SongService: Symbol("SongService")
+
   };
