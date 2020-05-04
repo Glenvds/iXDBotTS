@@ -85,17 +85,17 @@ export class MusicService {
                     serverQueue.songs.shift();
                     this.playSongsInChannel(guildId, serverQueue.songs[0])
                 });
-            dispatcher.setVolumeLogarithmic(serverQueue.volume); /// DIT TESTEN!!!!
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5 ); /// DIT TESTEN!!!!
         } else if (music.type === MusicTypes.Radio) {
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
-            dispatcher.setVolumeLogarithmic(serverQueue.volume); /// DIT TESTEN!!!!
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
         }
     }
 
     async playRadioInChannel(guildId: string, music: Music) {
         const serverQueue = this.queueService.getServerQueue(guildId);
         const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
-        dispatcher.setVolumeLogarithmic(serverQueue.volume);
+        dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     }
 
     getPossibleRadioStationsAsString(startMessage: string): string {

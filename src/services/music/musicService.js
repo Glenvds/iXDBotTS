@@ -108,11 +108,11 @@ let MusicService = class MusicService {
                     serverQueue.songs.shift();
                     this.playSongsInChannel(guildId, serverQueue.songs[0]);
                 });
-                dispatcher.setVolumeLogarithmic(serverQueue.volume); /// DIT TESTEN!!!!
+                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
             }
             else if (music.type === music_1.MusicTypes.Radio) {
                 const dispatcher = serverQueue.getConnection().play(music.url);
-                dispatcher.setVolumeLogarithmic(serverQueue.volume); /// DIT TESTEN!!!!
+                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
             }
         });
     }
@@ -120,7 +120,7 @@ let MusicService = class MusicService {
         return __awaiter(this, void 0, void 0, function* () {
             const serverQueue = this.queueService.getServerQueue(guildId);
             const dispatcher = serverQueue.getConnection().play(music.url);
-            dispatcher.setVolumeLogarithmic(serverQueue.volume);
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         });
     }
     getPossibleRadioStationsAsString(startMessage) {
