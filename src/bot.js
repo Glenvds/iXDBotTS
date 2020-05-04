@@ -29,8 +29,8 @@ let Bot = class Bot {
         this.MusicBot = MusicBot;
         this.NSFWBot = NSFWBot;
         this.prefix = "!";
-        //private iXDmusicChannelId = "312940674133655552"
-        this.iXDmusicChannelId = "706069227613978634";
+        //private iXDmusicChannelId = "312940674133655552" // REAL
+        this.iXDmusicChannelId = "706069227613978634"; // TEST
     }
     listen() {
         this.client.on("message", (message) => {
