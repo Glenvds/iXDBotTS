@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 var NSFWLinkType;
 (function (NSFWLinkType) {
-    NSFWLinkType["Boobs"] = "boobs";
     NSFWLinkType["Ass"] = "ass";
+    NSFWLinkType["Boobs"] = "boobs";
     NSFWLinkType["Hentai"] = "hentai";
 })(NSFWLinkType = exports.NSFWLinkType || (exports.NSFWLinkType = {}));
 class NSFWLinkOptions {

@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 
-export enum NSFWLinkType{
-    Boobs = "boobs",
+export enum NSFWLinkType{    
     Ass = "ass",
+    Boobs = "boobs",
     Hentai = "hentai"
 }
 
