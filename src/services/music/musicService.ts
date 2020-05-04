@@ -18,7 +18,8 @@ export class MusicService {
     private RADIO_STATIONS = [
         new Music({ title: "stubru", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio }),
         new Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: MusicTypes.Radio }),
-        new Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio })
+        new Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio }),
+        new Music({ title: "topradio", url: "http://loadbalancing.topradio.be/topradio.mp3", type: MusicTypes.Radio})
     ];
 
     //private musicDecibels = 0.001;
@@ -50,7 +51,7 @@ export class MusicService {
 
     async playRadio(message: Message): Promise<ServiceResult> {
         const radio = this.getRadioStationFromInput(message);
-        if (!radio) { return new ServiceResult(false, this.getPossibleRadioStationsAsString("Don't know this radio station.")) };
+        if (!radio) { return new ServiceResult(false, this.getPossibleRadioStationsAsString("Don't know this radio station. \n")) };
 
         const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);

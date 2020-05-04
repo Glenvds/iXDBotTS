@@ -40,7 +40,8 @@ let MusicService = class MusicService {
         this.RADIO_STATIONS = [
             new music_1.Music({ title: "stubru", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio }),
             new music_1.Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: music_1.MusicTypes.Radio }),
-            new music_1.Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio })
+            new music_1.Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio }),
+            new music_1.Music({ title: "topradio", url: "http://loadbalancing.topradio.be/topradio.mp3", type: music_1.MusicTypes.Radio })
         ];
     }
     playSong(message) {
@@ -70,7 +71,7 @@ let MusicService = class MusicService {
         return __awaiter(this, void 0, void 0, function* () {
             const radio = this.getRadioStationFromInput(message);
             if (!radio) {
-                return new serviceResult_1.ServiceResult(false, this.getPossibleRadioStationsAsString("Don't know this radio station."));
+                return new serviceResult_1.ServiceResult(false, this.getPossibleRadioStationsAsString("Don't know this radio station. \n"));
             }
             ;
             const guildId = message.guild.id;
