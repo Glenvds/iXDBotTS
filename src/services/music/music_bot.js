@@ -79,6 +79,7 @@ let MusicBot = class MusicBot {
             const contentOfMessage = this.messageResponder.getContentOfMessage(message);
             if (!contentOfMessage) {
                 this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.musicService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n"));
+                return;
             }
             const serviceResult = yield this.musicService.playRadio(message);
             if (serviceResult) {

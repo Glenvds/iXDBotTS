@@ -44,7 +44,7 @@ export class MusicBot {
         const textChannel = message.channel as TextChannel;
         const contentOfMessage = this.messageResponder.getContentOfMessage(message);
 
-        if (!contentOfMessage) { this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.musicService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n")); }
+        if (!contentOfMessage) { this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.musicService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n")); return;}
 
         const serviceResult = await this.musicService.playRadio(message);
         if (serviceResult) { this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message); }
