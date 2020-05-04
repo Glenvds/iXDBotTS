@@ -21,6 +21,7 @@ const cmdService_1 = require("./services/general/cmdService");
 const music_bot_1 = require("./services/music/music_bot");
 const nsfw_bot_1 = require("./services/nsfw/nsfw_bot");
 let Bot = class Bot {
+    //private iXDmusicChannelId = "706069227613978634"  // TEST
     constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot) {
         this.client = client;
         this.token = token;
@@ -29,8 +30,7 @@ let Bot = class Bot {
         this.MusicBot = MusicBot;
         this.NSFWBot = NSFWBot;
         this.prefix = "!";
-        //private iXDmusicChannelId = "312940674133655552" // REAL
-        this.iXDmusicChannelId = "706069227613978634"; // TEST
+        this.iXDmusicChannelId = "312940674133655552"; // REAL
     }
     listen() {
         this.client.on("message", (message) => {
