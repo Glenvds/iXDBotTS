@@ -26,7 +26,6 @@ export class MusicBot {
             case "next": this.skip(message); break;
             case "stop": this.stop(message); break;
             case "queue": this.getQueue(message); break;
-
         }
     }
 

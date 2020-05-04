@@ -45,17 +45,19 @@ let MusicService = class MusicService {
     playSong(message) {
         return __awaiter(this, void 0, void 0, function* () {
             const guildId = message.guild.id;
-            if (this.isRadioPlayingOnGuild(guildId)) {
-                return new serviceResult_1.ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
-            }
             const serverQueue = this.queueService.getServerQueue(guildId);
             const song = yield this.getSongFromMessage(message);
             if (!song) {
                 return new serviceResult_1.ServiceResult(false, "No songs found with that search query");
             }
             if (serverQueue) {
-                serverQueue.addToQueue(song);
-                return new serviceResult_1.ServiceResult(true, `${song.title} has beed added to the queue.`);
+                if (this.isRadioPlayingOnGuild(guildId)) {
+                    return new serviceResult_1.ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
+                }
+                else {
+                    serverQueue.addToQueue(song);
+                    return new serviceResult_1.ServiceResult(true, `${song.title} has beed added to the queue.`);
+                }
             }
             else if (!serverQueue) {
                 yield this.queueService.createMusicServerQueue(message, song);
@@ -65,22 +67,24 @@ let MusicService = class MusicService {
     }
     playRadio(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const guildId = message.guild.id;
-            const serverQueue = this.queueService.getServerQueue(guildId);
-            if (this.isSongPlayingOnGuild(guildId)) {
-                return new serviceResult_1.ServiceResult(false, "Music is already playing. First stop playing music(!stop).");
-            }
-            ;
-            if (this.isRadioPlayingOnGuild(guildId)) {
-                return new serviceResult_1.ServiceResult(false, "Currently playing radio station: " + serverQueue.songs[0].title + ".");
-            }
-            ;
             const radio = this.getRadioStationFromInput(message);
             if (!radio) {
                 return new serviceResult_1.ServiceResult(false, this.getPossibleRadioStationsAsString("Don't know this radio station."));
             }
             ;
-            this.playRadioInChannel(guildId, radio);
+            const guildId = message.guild.id;
+            const serverQueue = this.queueService.getServerQueue(guildId);
+            if (serverQueue) {
+                if (this.isSongPlayingOnGuild(guildId)) {
+                    return new serviceResult_1.ServiceResult(false, "Music is already playing. First stop playing music(!stop).");
+                }
+                ;
+                this.playRadioInChannel(guildId, radio);
+            }
+            else {
+                this.queueService.createRadioServerQueue(message, radio);
+                this.playRadioInChannel(guildId, radio);
+            }
         });
     }
     playSongsInChannel(guildId, music) {
