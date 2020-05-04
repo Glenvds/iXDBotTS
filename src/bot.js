@@ -21,6 +21,7 @@ const cmdService_1 = require("./services/general/cmdService");
 const music_bot_1 = require("./services/music/music_bot");
 const nsfw_bot_1 = require("./services/nsfw/nsfw_bot");
 let Bot = class Bot {
+    //private testiXDmusicChannelId = "706069227613978634"
     constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot) {
         this.client = client;
         this.token = token;
@@ -30,7 +31,6 @@ let Bot = class Bot {
         this.NSFWBot = NSFWBot;
         this.prefix = "!";
         this.iXDmusicChannelId = "312940674133655552";
-        this.testiXDmusicChannelId = "706069227613978634";
     }
     listen() {
         this.client.on("message", (message) => {
@@ -44,7 +44,7 @@ let Bot = class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case command_1.CommandType.Music:
-                        if (msgTextChannel.id !== this.testiXDmusicChannelId) {
+                        if (msgTextChannel.id !== this.iXDmusicChannelId) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {

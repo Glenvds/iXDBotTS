@@ -14,7 +14,6 @@ export class NSFWLinkOptions {
     needsPadding?: number;
 }
 
-
 @injectable()
 export class NSFWLink extends NSFWLinkOptions {
     private defaultOptions: Partial<NSFWLinkOptions> = {
