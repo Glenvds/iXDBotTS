@@ -99,6 +99,7 @@ let MusicService = class MusicService {
                 this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving.");
                 serverQueue.voiceChannel.leave();
                 this.queueService.removeServerQueue(guildId);
+                return;
             }
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
             if (music.type === music_1.MusicTypes.Song) {
