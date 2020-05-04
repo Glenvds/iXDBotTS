@@ -83,7 +83,7 @@ let MusicService = class MusicService {
                 this.playRadioInChannel(guildId, radio);
             }
             else {
-                this.queueService.createRadioServerQueue(message, radio);
+                yield this.queueService.createRadioServerQueue(message, radio);
                 this.playRadioInChannel(guildId, radio);
             }
         });
