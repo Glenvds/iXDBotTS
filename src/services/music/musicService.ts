@@ -59,7 +59,7 @@ export class MusicService {
             if (this.isSongPlayingOnGuild(guildId)) { return new ServiceResult(false, "Music is already playing. First stop playing music(!stop).") };
             this.playRadioInChannel(guildId, radio);
         } else {
-            this.queueService.createRadioServerQueue(message, radio);
+            await this.queueService.createRadioServerQueue(message, radio);
             this.playRadioInChannel(guildId, radio);
         }
     }
