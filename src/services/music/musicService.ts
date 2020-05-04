@@ -21,6 +21,8 @@ export class MusicService {
         new Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio })
     ];
 
+    private musicDecibels = 20;
+
     constructor(@inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
         @inject(TYPES.SongService) private songService: SongService,
         @inject(TYPES.QueueService) private queueService: QueueService,
@@ -83,17 +85,17 @@ export class MusicService {
                     serverQueue.songs.shift();
                     this.playSongsInChannel(guildId, serverQueue.songs[0])
                 });
-            dispatcher.setVolumeDecibels(50); /// DIT TESTEN!!!!
+            dispatcher.setVolumeDecibels(this.musicDecibels); /// DIT TESTEN!!!!
         } else if (music.type === MusicTypes.Radio) {
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
-            dispatcher.setVolumeDecibels(50); /// DIT TESTEN!!!!
+            dispatcher.setVolumeDecibels(this.musicDecibels); /// DIT TESTEN!!!!
         }
     }
 
     async playRadioInChannel(guildId: string, music: Music) {
         const serverQueue = this.queueService.getServerQueue(guildId);
         const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
-        dispatcher.setVolumeDecibels(50);
+        dispatcher.setVolumeDecibels(this.musicDecibels);
     }
 
     getPossibleRadioStationsAsString(startMessage: string): string {

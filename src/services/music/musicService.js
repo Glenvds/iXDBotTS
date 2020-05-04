@@ -41,6 +41,7 @@ let MusicService = class MusicService {
             new music_1.Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: music_1.MusicTypes.Radio }),
             new music_1.Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio })
         ];
+        this.musicDecibels = 20;
     }
     playSong(message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -107,11 +108,11 @@ let MusicService = class MusicService {
                     serverQueue.songs.shift();
                     this.playSongsInChannel(guildId, serverQueue.songs[0]);
                 });
-                dispatcher.setVolumeDecibels(50); /// DIT TESTEN!!!!
+                dispatcher.setVolumeDecibels(this.musicDecibels); /// DIT TESTEN!!!!
             }
             else if (music.type === music_1.MusicTypes.Radio) {
                 const dispatcher = serverQueue.getConnection().play(music.url);
-                dispatcher.setVolumeDecibels(50); /// DIT TESTEN!!!!
+                dispatcher.setVolumeDecibels(this.musicDecibels); /// DIT TESTEN!!!!
             }
         });
     }
@@ -119,7 +120,7 @@ let MusicService = class MusicService {
         return __awaiter(this, void 0, void 0, function* () {
             const serverQueue = this.queueService.getServerQueue(guildId);
             const dispatcher = serverQueue.getConnection().play(music.url);
-            dispatcher.setVolumeDecibels(50);
+            dispatcher.setVolumeDecibels(this.musicDecibels);
         });
     }
     getPossibleRadioStationsAsString(startMessage) {
