@@ -2,7 +2,8 @@ import { injectable } from "inversify";
 
 export enum CommandType{
     NSFW,
-    Music
+    Music,
+    General
 }
 
 @injectable()

@@ -14,6 +14,7 @@ import { NSFWBot } from "./services/nsfw/nsfw_bot";
 import { QueueService } from "./services/music/queueService";
 import { MusicService } from "./services/music/musicService";
 import { SongService } from "./services/music/songService";
+import { GeneralBot } from "./services/general/general_bot";
 
 let container = new Container();
 
@@ -30,5 +31,6 @@ container.bind<NSFWBot>(TYPES.NSFWBot).to(NSFWBot).inSingletonScope();
 container.bind<QueueService>(TYPES.QueueService).to(QueueService).inSingletonScope();
 container.bind<MusicService>(TYPES.MusicService).to(MusicService).inSingletonScope();
 container.bind<SongService>(TYPES.SongService).to(SongService).inSingletonScope();
+container.bind<GeneralBot>(TYPES.GeneralBot).to(GeneralBot).inSingletonScope();
 
 export default container;

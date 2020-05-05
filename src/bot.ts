@@ -49,7 +49,9 @@ export class Bot {
                         if (!msgTextChannel.nsfw) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the NSFW channel!")
                         }
-                        else { this.NSFWBot.executeNSFWCommand(requestedCommand, message); }
+                        else { this.NSFWBot.executeNSFWCommand(requestedCommand, message); } break;
+                    case CommandType.General:
+                        
                 }
             } else {
                 this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
