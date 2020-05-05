@@ -64,6 +64,8 @@ let Bot = class Bot {
                         else {
                             this.NSFWBot.executeNSFWCommand(requestedCommand, message);
                         }
+                        break;
+                    case command_1.CommandType.General:
                 }
             }
             else {

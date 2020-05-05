@@ -24,6 +24,8 @@ let cmdService = class cmdService {
             new command_1.Command(command_1.CommandType.Music, "stop"),
             new command_1.Command(command_1.CommandType.Music, "queue"),
             new command_1.Command(command_1.CommandType.Music, "radio"),
+            new command_1.Command(command_1.CommandType.General, "minecraft"),
+            new command_1.Command(command_1.CommandType.General, "mc")
         ];
     }
     getCommand(input) {
