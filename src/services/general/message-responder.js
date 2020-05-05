@@ -22,6 +22,10 @@ let MessageResponder = class MessageResponder {
     sendMultipleLineResponseToChannel(channel, text) {
         return channel.send("```" + text + "```");
     }
+    sendEmbededResponseToChannel(channel, message) {
+        //return message.textChannel.send({embed: message});
+        return channel.send(message);
+    }
     getContentOfMessage(message) {
         if (message.content.indexOf(' ') !== -1) {
             return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();

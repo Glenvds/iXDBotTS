@@ -22,13 +22,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
+const discord_js_1 = require("discord.js");
 const types_1 = require("../../types");
 const message_responder_1 = require("./message-responder");
 let GeneralBot = class GeneralBot {
     constructor(messageResponder) {
         this.messageResponder = messageResponder;
         this.MCSERVERLINK = "ixd-mc.glenvandesteen.be";
-        this.MCDOWNLOADLINK = "dlmc.glenvandesteen.be";
+        this.MCDOWNLOADLINK = "http://dlmc.glenvandesteen.be";
     }
     exectueGeneralCommand(command, message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -43,9 +44,10 @@ let GeneralBot = class GeneralBot {
         });
     }
     sendMinecraftHelp(message) {
-        const text = `Minecraft information: \n  -Download the minecraft client at ${this.MCDOWNLOADLINK}\n
-          -iXD Minecraft server: ${this.MCSERVERLINK}`;
-        this.messageResponder.sendMultipleLineResponseToChannel(message.channel, text);
+        const embededmsg = new discord_js_1.MessageEmbed()
+            .setTitle("Minecraft information")
+            .addFields({ name: "Minecraft client:", value: `[Download here](${this.MCDOWNLOADLINK})` }, { name: "iXD Minecraft server:", value: `${this.MCSERVERLINK}` });
+        this.messageResponder.sendEmbededResponseToChannel(message.channel, embededmsg);
     }
 };
 GeneralBot = __decorate([
