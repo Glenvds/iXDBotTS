@@ -7,9 +7,8 @@ import { MessageResponder } from "./message-responder";
 @injectable()
 export class GeneralBot{
 
-    MCSERVERLINK = "ixd-mc.glenvandesteen.be";
-    MCDOWNLOADLINK = "dlmc.glenvandesteen.be";
-
+    private MCSERVERLINK = "ixd-mc.glenvandesteen.be";
+    private MCDOWNLOADLINK = "dlmc.glenvandesteen.be";
 
     constructor(@inject(TYPES.MessageResponder) private messageResponder: MessageResponder){
     }

@@ -20,15 +20,17 @@ const command_1 = require("./models/general/command");
 const cmdService_1 = require("./services/general/cmdService");
 const music_bot_1 = require("./services/music/music_bot");
 const nsfw_bot_1 = require("./services/nsfw/nsfw_bot");
+const general_bot_1 = require("./services/general/general_bot");
 let Bot = class Bot {
     //private iXDmusicChannelId = "706069227613978634"  // TEST
-    constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot) {
+    constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot, GeneralBot) {
         this.client = client;
         this.token = token;
         this.messageResponder = messageResponder;
         this.cmdService = cmdService;
         this.MusicBot = MusicBot;
         this.NSFWBot = NSFWBot;
+        this.GeneralBot = GeneralBot;
         this.prefix = "!";
         this.iXDmusicChannelId = "312940674133655552"; // REAL
     }
@@ -66,6 +68,7 @@ let Bot = class Bot {
                         }
                         break;
                     case command_1.CommandType.General:
+                        this.GeneralBot.exectueGeneralCommand(requestedCommand, message);
                 }
             }
             else {
@@ -83,10 +86,12 @@ Bot = __decorate([
     __param(3, inversify_1.inject(types_1.TYPES.cmdService)),
     __param(4, inversify_1.inject(types_1.TYPES.MusicBot)),
     __param(5, inversify_1.inject(types_1.TYPES.NSFWBot)),
+    __param(6, inversify_1.inject(types_1.TYPES.GeneralBot)),
     __metadata("design:paramtypes", [discord_js_1.Client, String, message_responder_1.MessageResponder,
         cmdService_1.cmdService,
         music_bot_1.MusicBot,
-        nsfw_bot_1.NSFWBot])
+        nsfw_bot_1.NSFWBot,
+        general_bot_1.GeneralBot])
 ], Bot);
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map

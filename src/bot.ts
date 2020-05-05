@@ -6,6 +6,7 @@ import { Command, CommandType } from "./models/general/command";
 import { cmdService } from "./services/general/cmdService";
 import { MusicBot } from "./services/music/music_bot";
 import { NSFWBot } from "./services/nsfw/nsfw_bot";
+import { GeneralBot } from "./services/general/general_bot";
 
 @injectable()
 export class Bot {
@@ -18,7 +19,8 @@ export class Bot {
         @inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
         @inject(TYPES.cmdService) private cmdService: cmdService,
         @inject(TYPES.MusicBot) private MusicBot: MusicBot,
-        @inject(TYPES.NSFWBot) private NSFWBot: NSFWBot) {
+        @inject(TYPES.NSFWBot) private NSFWBot: NSFWBot,
+        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot) {
     }
 
     public listen(): Promise<string> {
@@ -51,7 +53,7 @@ export class Bot {
                         }
                         else { this.NSFWBot.executeNSFWCommand(requestedCommand, message); } break;
                     case CommandType.General:
-                        
+                        this.GeneralBot.exectueGeneralCommand(requestedCommand, message);
                 }
             } else {
                 this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
