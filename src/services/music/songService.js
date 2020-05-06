@@ -36,6 +36,7 @@ let SongService = class SongService {
             try {
                 const requestURL = yield this.getSongUrl(searchInput);
                 try {
+                    console.log(requestURL);
                     const songInfo = yield this.ytService.getInfoStreamYoutube(requestURL);
                     return new music_1.Music({ title: songInfo.title, url: songInfo.video_url, requester: requester, type: music_1.MusicTypes.Song });
                 }

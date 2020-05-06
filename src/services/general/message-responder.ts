@@ -26,7 +26,7 @@ export class MessageResponder {
 
     getContentOfMessage(message: Message): string{
         if (message.content.indexOf(' ') !== -1) {
-            return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();
+            return message.content.substring(message.content.indexOf(' ') + 1);
         } else {
             return;
         }

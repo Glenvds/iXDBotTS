@@ -28,7 +28,7 @@ let MessageResponder = class MessageResponder {
     }
     getContentOfMessage(message) {
         if (message.content.indexOf(' ') !== -1) {
-            return message.content.substring(message.content.indexOf(' ') + 1).toLocaleLowerCase();
+            return message.content.substring(message.content.indexOf(' ') + 1);
         }
         else {
             return;

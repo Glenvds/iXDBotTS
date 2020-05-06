@@ -17,6 +17,7 @@ export class SongService {
         try {
             const requestURL = await this.getSongUrl(searchInput);
             try {
+                console.log(requestURL);
                 const songInfo = await this.ytService.getInfoStreamYoutube(requestURL);
                 return new Music({title: songInfo.title, url: songInfo.video_url, requester: requester, type: MusicTypes.Song});
             } catch (err) {
