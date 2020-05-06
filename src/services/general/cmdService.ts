@@ -16,7 +16,8 @@ export class cmdService {
         new Command(CommandType.Music, "queue"),
         new Command(CommandType.Music, "radio"),
         new Command(CommandType.General, "minecraft"),
-        new Command(CommandType.General, "mc")
+        new Command(CommandType.General, "mc"),
+        //new Command(CommandType.General, "help")
     ]
 
     constructor() {

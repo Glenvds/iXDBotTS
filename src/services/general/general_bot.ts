@@ -8,7 +8,7 @@ import { MessageResponder} from "./message-responder";
 export class GeneralBot{
 
     private MCSERVERLINK = "ixd-mc.glenvandesteen.be";
-    private MCDOWNLOADLINK = "http://dlmc.glenvandesteen.be";
+    private MCDOWNLOADLINK = "http://mcdl.glenvandesteen.be";
 
     constructor(@inject(TYPES.MessageResponder) private messageResponder: MessageResponder){
     }
@@ -17,6 +17,7 @@ export class GeneralBot{
         switch(command.textCommand){
             case "mc": this.sendMinecraftHelp(message); break;
             case "minecraft": this.sendMinecraftHelp(message); break;
+            case "help": this.sendCommandsHelp(message); break;
         }
     }
 
@@ -29,6 +30,16 @@ export class GeneralBot{
             {name: "iXD Minecraft server:", value: `${this.MCSERVERLINK}`}
         )
 
+        this.messageResponder.sendEmbededResponseToChannel(message.channel as TextChannel, embededmsg);
+    }
+
+    private sendCommandsHelp(message: Message){
+        const embededmsg = new MessageEmbed()
+        .setTitle("iXD Discord bot commands")
+        .addFields(
+            {name: "Music", value:":", inline: true},
+            {name: "!play", value: "Play music"}
+        )
         this.messageResponder.sendEmbededResponseToChannel(message.channel as TextChannel, embededmsg);
     }
 

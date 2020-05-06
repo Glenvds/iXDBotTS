@@ -29,7 +29,7 @@ let GeneralBot = class GeneralBot {
     constructor(messageResponder) {
         this.messageResponder = messageResponder;
         this.MCSERVERLINK = "ixd-mc.glenvandesteen.be";
-        this.MCDOWNLOADLINK = "http://dlmc.glenvandesteen.be";
+        this.MCDOWNLOADLINK = "http://mcdl.glenvandesteen.be";
     }
     exectueGeneralCommand(command, message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40,6 +40,9 @@ let GeneralBot = class GeneralBot {
                 case "minecraft":
                     this.sendMinecraftHelp(message);
                     break;
+                case "help":
+                    this.sendCommandsHelp(message);
+                    break;
             }
         });
     }
@@ -47,6 +50,12 @@ let GeneralBot = class GeneralBot {
         const embededmsg = new discord_js_1.MessageEmbed()
             .setTitle("Minecraft information")
             .addFields({ name: "Minecraft client:", value: `[Download here](${this.MCDOWNLOADLINK})` }, { name: "iXD Minecraft server:", value: `${this.MCSERVERLINK}` });
+        this.messageResponder.sendEmbededResponseToChannel(message.channel, embededmsg);
+    }
+    sendCommandsHelp(message) {
+        const embededmsg = new discord_js_1.MessageEmbed()
+            .setTitle("iXD Discord bot commands")
+            .addFields({ name: "Music", value: ":", inline: true }, { name: "!play", value: "Play music" });
         this.messageResponder.sendEmbededResponseToChannel(message.channel, embededmsg);
     }
 };
