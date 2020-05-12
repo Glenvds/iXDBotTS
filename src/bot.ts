@@ -37,7 +37,7 @@ export class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case CommandType.Music:
-                        if (msgTextChannel.id !== this.iXDmusicChannelId || msgTextChannel.id !== this.MCmusicChannelId) {
+                        if (msgTextChannel.id !== this.iXDmusicChannelId && msgTextChannel.id !== this.MCmusicChannelId) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {
