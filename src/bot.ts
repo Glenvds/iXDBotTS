@@ -12,6 +12,7 @@ import { GeneralBot } from "./services/general/general_bot";
 export class Bot {
     private prefix: string = "!";
     private iXDmusicChannelId = "312940674133655552" // REAL
+    private MCmusicChannelId = "709788673423441993" // FAST IMPLEMENTATION FOR MC SERVER
     //private iXDmusicChannelId = "706069227613978634"  // TEST
 
     constructor(@inject(TYPES.Client) private client: Client,
@@ -36,7 +37,7 @@ export class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case CommandType.Music:
-                        if (msgTextChannel.id !== this.iXDmusicChannelId) {
+                        if (msgTextChannel.id !== this.iXDmusicChannelId || msgTextChannel.id !== this.MCmusicChannelId) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {
