@@ -11,8 +11,8 @@ import { GeneralBot } from "./services/general/general_bot";
 @injectable()
 export class Bot {
     private prefix: string = "!";
-    private iXDmusicChannelId = "312940674133655552" // REAL
-    private MCmusicChannelId = "709788673423441993" // FAST IMPLEMENTATION FOR MC SERVER
+    private iXDmusicChannelId = "312940674133655552" // REAL 312940674133655552
+    private MCmusicChannelId = "709788673423441993" // FAST IMPLEMENTATION FOR MC SERVER 709788673423441993
     //private iXDmusicChannelId = "706069227613978634"  // TEST
     private musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId];
     
@@ -35,7 +35,7 @@ export class Bot {
 
             const requestedCommand: Command = this.cmdService.getCommand(inputCommand);
             const msgTextChannel: TextChannel = message.channel as TextChannel;
-
+            
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case CommandType.Music:

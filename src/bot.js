@@ -22,7 +22,6 @@ const music_bot_1 = require("./services/music/music_bot");
 const nsfw_bot_1 = require("./services/nsfw/nsfw_bot");
 const general_bot_1 = require("./services/general/general_bot");
 let Bot = class Bot {
-    //private iXDmusicChannelId = "706069227613978634"  // TEST
     constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot, GeneralBot) {
         this.client = client;
         this.token = token;
@@ -32,7 +31,10 @@ let Bot = class Bot {
         this.NSFWBot = NSFWBot;
         this.GeneralBot = GeneralBot;
         this.prefix = "!";
-        this.iXDmusicChannelId = "312940674133655552"; // REAL
+        this.iXDmusicChannelId = "312940674133655552"; // REAL 312940674133655552
+        this.MCmusicChannelId = "709788673423441993"; // FAST IMPLEMENTATION FOR MC SERVER 709788673423441993
+        //private iXDmusicChannelId = "706069227613978634"  // TEST
+        this.musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId];
     }
     listen() {
         this.client.on("message", (message) => {
@@ -46,7 +48,7 @@ let Bot = class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case command_1.CommandType.Music:
-                        if (msgTextChannel.id !== this.iXDmusicChannelId) {
+                        if (!this.musicChannels.includes(msgTextChannel.id)) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {
