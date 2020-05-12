@@ -14,6 +14,8 @@ export class Bot {
     private iXDmusicChannelId = "312940674133655552" // REAL
     private MCmusicChannelId = "709788673423441993" // FAST IMPLEMENTATION FOR MC SERVER
     //private iXDmusicChannelId = "706069227613978634"  // TEST
+    private musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId];
+    
 
     constructor(@inject(TYPES.Client) private client: Client,
         @inject(TYPES.Token) private readonly token: string,
@@ -37,7 +39,7 @@ export class Bot {
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case CommandType.Music:
-                        if (msgTextChannel.id !== this.iXDmusicChannelId && msgTextChannel.id !== this.MCmusicChannelId) {
+                        if (!this.musicChannels.includes(msgTextChannel.id)) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                         }
                         else {
