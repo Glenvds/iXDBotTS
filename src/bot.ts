@@ -13,8 +13,8 @@ export class Bot {
     private prefix: string = "!";
     private iXDmusicChannelId = "312940674133655552" // REAL 312940674133655552
     private MCmusicChannelId = "709788673423441993" // FAST IMPLEMENTATION FOR MC SERVER 709788673423441993
-    //private iXDmusicChannelId = "706069227613978634"  // TEST
-    private musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId];
+    private TestMusicChannelId = "706069227613978634"  // TEST
+    private musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId, this.TestMusicChannelId];
     
 
     constructor(@inject(TYPES.Client) private client: Client,

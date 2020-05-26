@@ -33,8 +33,8 @@ let Bot = class Bot {
         this.prefix = "!";
         this.iXDmusicChannelId = "312940674133655552"; // REAL 312940674133655552
         this.MCmusicChannelId = "709788673423441993"; // FAST IMPLEMENTATION FOR MC SERVER 709788673423441993
-        //private iXDmusicChannelId = "706069227613978634"  // TEST
-        this.musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId];
+        this.TestMusicChannelId = "706069227613978634"; // TEST
+        this.musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId, this.TestMusicChannelId];
     }
     listen() {
         this.client.on("message", (message) => {
