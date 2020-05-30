@@ -1,3 +1,4 @@
+import { ReneBot } from './services/rene/rene_bot';
 import { Client, Message, Channel, TextChannel, DMChannel, NewsChannel } from "discord.js";
 import { inject, injectable } from "inversify";
 import { TYPES } from "./types";
@@ -15,7 +16,7 @@ export class Bot {
     private MCmusicChannelId = "709788673423441993" // FAST IMPLEMENTATION FOR MC SERVER 709788673423441993
     private TestMusicChannelId = "706069227613978634"  // TEST
     private musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId, this.TestMusicChannelId];
-    
+
 
     constructor(@inject(TYPES.Client) private client: Client,
         @inject(TYPES.Token) private readonly token: string,
@@ -23,7 +24,8 @@ export class Bot {
         @inject(TYPES.cmdService) private cmdService: cmdService,
         @inject(TYPES.MusicBot) private MusicBot: MusicBot,
         @inject(TYPES.NSFWBot) private NSFWBot: NSFWBot,
-        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot) {
+        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot,
+        @inject(TYPES.ReneBot) private ReneBot: ReneBot) {
     }
 
     public listen(): Promise<string> {
@@ -35,7 +37,7 @@ export class Bot {
 
             const requestedCommand: Command = this.cmdService.getCommand(inputCommand);
             const msgTextChannel: TextChannel = message.channel as TextChannel;
-            
+
             if (requestedCommand) {
                 switch (requestedCommand.type) {
                     case CommandType.Music:
@@ -50,13 +52,20 @@ export class Bot {
                             else { this.MusicBot.executeMusicCommand(requestedCommand, message); }
                         }
                         break;
+
                     case CommandType.NSFW:
                         if (!msgTextChannel.nsfw) {
                             this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the NSFW channel!")
                         }
                         else { this.NSFWBot.executeNSFWCommand(requestedCommand, message); } break;
+
                     case CommandType.General:
-                        this.GeneralBot.exectueGeneralCommand(requestedCommand, message);
+                        this.GeneralBot.executeGeneralCommand(requestedCommand, message);
+                        break;
+
+                    case CommandType.Rene:
+                        this.ReneBot.executeNSFWCommand(requestedCommand, message);
+                        break;
                 }
             } else {
                 this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");

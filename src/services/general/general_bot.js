@@ -31,7 +31,7 @@ let GeneralBot = class GeneralBot {
         this.MCSERVERLINK = "ixd-mc.glenvandesteen.be";
         this.MCDOWNLOADLINK = "http://mcdl.glenvandesteen.be";
     }
-    exectueGeneralCommand(command, message) {
+    executeGeneralCommand(command, message) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (command.textCommand) {
                 case "mc":

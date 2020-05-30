@@ -17,13 +17,14 @@ export class cmdService {
         new Command(CommandType.Music, "radio"),
         new Command(CommandType.General, "minecraft"),
         new Command(CommandType.General, "mc"),
+        new Command(CommandType.Rene, "rene"),
         //new Command(CommandType.General, "help")
     ]
 
     constructor() {
     }
 
-    public getCommand(input: string): Command {        
+    public getCommand(input: string): Command {
         for (let cmd of this.Commands) {
             if (cmd.textCommand === input) {
                 return cmd;

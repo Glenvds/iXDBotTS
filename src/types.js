@@ -17,6 +17,7 @@ exports.TYPES = {
     QueueService: Symbol("QueueService"),
     MusicService: Symbol("MusicService"),
     SongService: Symbol("SongService"),
-    GeneralBot: Symbol("GeneralBot")
+    GeneralBot: Symbol("GeneralBot"),
+    ReneBot: Symbol("ReneBot")
 };
 //# sourceMappingURL=types.js.map

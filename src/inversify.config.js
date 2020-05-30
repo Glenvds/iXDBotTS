@@ -16,10 +16,11 @@ const queueService_1 = require("./services/music/queueService");
 const musicService_1 = require("./services/music/musicService");
 const songService_1 = require("./services/music/songService");
 const general_bot_1 = require("./services/general/general_bot");
+const rene_bot_1 = require("./services/rene/rene_bot");
 let container = new inversify_1.Container();
 container.bind(types_1.TYPES.Bot).to(bot_1.Bot).inSingletonScope();
 container.bind(types_1.TYPES.Client).toConstantValue(new discord_js_1.Client());
-container.bind(types_1.TYPES.Token).toConstantValue(process.env.TOKEN);
+container.bind(types_1.TYPES.Token).toConstantValue("bQ7kVGxZkR0LoE7IM5v1VZ5mgc-IPeTg" || process.env.TOKEN);
 container.bind(types_1.TYPES.MessageResponder).to(message_responder_1.MessageResponder).inSingletonScope();
 container.bind(types_1.TYPES.PingFinder).to(ping_finder_1.PingFinder).inSingletonScope();
 container.bind(types_1.TYPES.cmdService).to(cmdService_1.cmdService).inSingletonScope();
@@ -31,5 +32,6 @@ container.bind(types_1.TYPES.QueueService).to(queueService_1.QueueService).inSin
 container.bind(types_1.TYPES.MusicService).to(musicService_1.MusicService).inSingletonScope();
 container.bind(types_1.TYPES.SongService).to(songService_1.SongService).inSingletonScope();
 container.bind(types_1.TYPES.GeneralBot).to(general_bot_1.GeneralBot).inSingletonScope();
+container.bind(types_1.TYPES.ReneBot).to(rene_bot_1.ReneBot).inSingletonScope();
 exports.default = container;
 //# sourceMappingURL=inversify.config.js.map

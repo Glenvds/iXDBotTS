@@ -15,6 +15,7 @@ var CommandType;
     CommandType[CommandType["NSFW"] = 0] = "NSFW";
     CommandType[CommandType["Music"] = 1] = "Music";
     CommandType[CommandType["General"] = 2] = "General";
+    CommandType[CommandType["Rene"] = 3] = "Rene";
 })(CommandType = exports.CommandType || (exports.CommandType = {}));
 let Command = class Command {
     constructor(type, textCommand) {
