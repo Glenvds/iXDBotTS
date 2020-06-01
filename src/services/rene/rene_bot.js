@@ -37,7 +37,7 @@ let ReneBot = class ReneBot {
     }
     generateFileList() {
         this.files = fs_1.readdirSync(this.directory);
-        console.log("Loaded files for rene", this.files);
+        // console.log("Loaded files for rene", this.files);
     }
     executeNSFWCommand(command, message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -48,16 +48,16 @@ let ReneBot = class ReneBot {
             const serverQueue = this.queueService.getServerQueue(guildId);
             if (serverQueue)
                 return; // Song playing
-            const msgTextChannel = message.channel;
-            const input = this.messageResponder.getContentOfMessage(message);
-            const randomSound = this.getSound(input);
-            var connection = yield channel.join();
             try {
+                const msgTextChannel = message.channel;
+                const input = this.messageResponder.getContentOfMessage(message);
+                const randomSound = this.getSound(input);
+                var connection = yield channel.join();
                 var streamDispatcher = connection.play(randomSound);
                 streamDispatcher.on("error", (err) => {
                     // this.messageResponder.sendResponseToChannel(msgTextChannel, err.message);
                     // streamDispatcher.end(err);
-                    console.log(err);
+                    console.error(err);
                 });
                 streamDispatcher.on("finish", () => {
                     channel.leave();
@@ -67,7 +67,7 @@ let ReneBot = class ReneBot {
                 // });
             }
             catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 channel.leave();
             }
         });

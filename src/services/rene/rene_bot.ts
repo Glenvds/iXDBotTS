@@ -26,7 +26,7 @@ export class ReneBot {
 
     private generateFileList() {
         this.files = readdirSync(this.directory)
-        console.log("Loaded files for rene", this.files);
+        // console.log("Loaded files for rene", this.files);
     }
 
     async executeNSFWCommand(command: Command, message: Message) {
@@ -37,19 +37,18 @@ export class ReneBot {
         const serverQueue = this.queueService.getServerQueue(guildId);
         if (serverQueue) return; // Song playing
 
-        const msgTextChannel: TextChannel = message.channel as TextChannel;
-        const input = this.messageResponder.getContentOfMessage(message);
-        const randomSound = this.getSound(input);
-
-        var connection = await channel.join();
-
         try {
+            const msgTextChannel: TextChannel = message.channel as TextChannel;
+            const input = this.messageResponder.getContentOfMessage(message);
+            const randomSound = this.getSound(input);
+
+            var connection = await channel.join();
             var streamDispatcher = connection.play(randomSound);
 
             streamDispatcher.on("error", (err) => {
                 // this.messageResponder.sendResponseToChannel(msgTextChannel, err.message);
                 // streamDispatcher.end(err);
-                console.log(err);
+                console.error(err);
             });
 
             streamDispatcher.on("finish", () => {
@@ -60,7 +59,7 @@ export class ReneBot {
             //     channel.leave();
             // });
         } catch (ex) {
-            console.log(ex);
+            console.error(ex);
             channel.leave();
         }
     }
