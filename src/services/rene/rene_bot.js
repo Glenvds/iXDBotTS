@@ -33,10 +33,11 @@ let ReneBot = class ReneBot {
         this.generateFileList();
     }
     get directory() {
-        return `${process.cwd()}\\src\\assets\\rene`;
+        return `${process.cwd()}/src/assets/rene`;
     }
     generateFileList() {
         this.files = fs_1.readdirSync(this.directory);
+        console.log("Loaded files for rene", this.files);
     }
     executeNSFWCommand(command, message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -75,7 +76,7 @@ let ReneBot = class ReneBot {
         var filteredFiles = filter ? this.files.filter(x => x.indexOf(filter) > 0) : this.files;
         if (!filteredFiles.length)
             return;
-        var randomFile = `${this.directory}\\${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+        var randomFile = `${this.directory}/${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
         console.log(`Playing ${randomFile}`);
         return fs_1.createReadStream(randomFile);
     }
