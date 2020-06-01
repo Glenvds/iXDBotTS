@@ -11,6 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const rene_bot_1 = require("./services/rene/rene_bot");
 const discord_js_1 = require("discord.js");
@@ -39,7 +48,7 @@ let Bot = class Bot {
         this.musicChannels = [this.iXDmusicChannelId, this.MCmusicChannelId, this.TestMusicChannelId];
     }
     listen() {
-        this.client.on("message", (message) => {
+        this.client.on("message", (message) => __awaiter(this, void 0, void 0, function* () {
             if (message.author.bot || !message.content.startsWith(this.prefix)) {
                 return;
             }
@@ -75,14 +84,14 @@ let Bot = class Bot {
                         this.GeneralBot.executeGeneralCommand(requestedCommand, message);
                         break;
                     case command_1.CommandType.Rene:
-                        this.ReneBot.executeNSFWCommand(requestedCommand, message);
+                        yield this.ReneBot.executeNSFWCommand(requestedCommand, message);
                         break;
                 }
             }
             else {
                 this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
             }
-        });
+        }));
         return this.client.login(this.token);
     }
 };

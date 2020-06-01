@@ -4,8 +4,7 @@ import { Command } from "../../models/general/command";
 import { Message, TextChannel } from "discord.js";
 import { TYPES } from "../../types";
 import { MessageResponder } from "../general/message-responder";
-import { urlService } from "../general/urlService";
-import { readdirSync, fstat, createReadStream } from "fs";
+import { readdirSync, createReadStream } from "fs";
 import { QueueService } from "../music/queueService";
 
 
@@ -16,15 +15,17 @@ export class ReneBot {
 
     constructor(
         @inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
-        @inject(TYPES.urlService) private urlService: urlService,
         @inject(TYPES.QueueService) private queueService: QueueService) {
 
         this.generateFileList();
     }
 
+    private get directory() {
+        return `${process.cwd()}\\src\\assets\\rene`;
+    }
+
     private generateFileList() {
-        var fileDirectory = process.cwd() + "\\src\\assets\\rene";
-        this.files = readdirSync(fileDirectory)
+        this.files = readdirSync(this.directory)
     }
 
     async executeNSFWCommand(command: Command, message: Message) {
@@ -37,24 +38,39 @@ export class ReneBot {
 
         const msgTextChannel: TextChannel = message.channel as TextChannel;
         const input = this.messageResponder.getContentOfMessage(message);
-        const randomSound = await this.getSound(input);
+        const randomSound = this.getSound(input);
 
         var connection = await channel.join();
-        var streamDispatcher = connection.play(randomSound);
 
-        streamDispatcher.on("error", function (err) {
-            this.messageResponder.sendResponseToChannel(msgTextChannel, err.message);
-            streamDispatcher.end(err);
-        });
+        try {
+            var streamDispatcher = connection.play(randomSound);
 
-        streamDispatcher.on("end", () => {
+            streamDispatcher.on("error", (err) => {
+                // this.messageResponder.sendResponseToChannel(msgTextChannel, err.message);
+                // streamDispatcher.end(err);
+                console.log(err);
+            });
+
+            streamDispatcher.on("finish", () => {
+                channel.leave();
+            });
+
+            // streamDispatcher.on("end", () => {
+            //     channel.leave();
+            // });
+        } catch (ex) {
+            console.log(ex);
             channel.leave();
-        });
+        }
     }
 
     getSound(filter: string = null): Readable {
         var filteredFiles = filter ? this.files.filter(x => x.indexOf(filter) > 0) : this.files;
-        var randomFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)]
+        if (!filteredFiles.length) return;
+
+        var randomFile = `${this.directory}\\${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+
+        console.log(`Playing ${randomFile}`);
         return createReadStream(randomFile);
     }
 }

@@ -24,19 +24,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const types_1 = require("../../types");
 const message_responder_1 = require("../general/message-responder");
-const urlService_1 = require("../general/urlService");
 const fs_1 = require("fs");
 const queueService_1 = require("../music/queueService");
 let ReneBot = class ReneBot {
-    constructor(messageResponder, urlService, queueService) {
+    constructor(messageResponder, queueService) {
         this.messageResponder = messageResponder;
-        this.urlService = urlService;
         this.queueService = queueService;
         this.generateFileList();
     }
+    get directory() {
+        return `${process.cwd()}\\src\\assets\\rene`;
+    }
     generateFileList() {
-        var fileDirectory = process.cwd() + "\\src\\assets\\rene";
-        this.files = fs_1.readdirSync(fileDirectory);
+        this.files = fs_1.readdirSync(this.directory);
     }
     executeNSFWCommand(command, message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -49,31 +49,42 @@ let ReneBot = class ReneBot {
                 return; // Song playing
             const msgTextChannel = message.channel;
             const input = this.messageResponder.getContentOfMessage(message);
-            const randomSound = yield this.getSound(input);
+            const randomSound = this.getSound(input);
             var connection = yield channel.join();
-            var streamDispatcher = connection.play(randomSound);
-            streamDispatcher.on("error", function (err) {
-                this.messageResponder.sendResponseToChannel(msgTextChannel, err.message);
-                streamDispatcher.end(err);
-            });
-            streamDispatcher.on("end", () => {
+            try {
+                var streamDispatcher = connection.play(randomSound);
+                streamDispatcher.on("error", (err) => {
+                    // this.messageResponder.sendResponseToChannel(msgTextChannel, err.message);
+                    // streamDispatcher.end(err);
+                    console.log(err);
+                });
+                streamDispatcher.on("finish", () => {
+                    channel.leave();
+                });
+                // streamDispatcher.on("end", () => {
+                //     channel.leave();
+                // });
+            }
+            catch (ex) {
+                console.log(ex);
                 channel.leave();
-            });
+            }
         });
     }
     getSound(filter = null) {
         var filteredFiles = filter ? this.files.filter(x => x.indexOf(filter) > 0) : this.files;
-        var randomFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
+        if (!filteredFiles.length)
+            return;
+        var randomFile = `${this.directory}\\${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+        console.log(`Playing ${randomFile}`);
         return fs_1.createReadStream(randomFile);
     }
 };
 ReneBot = __decorate([
     inversify_1.injectable(),
     __param(0, inversify_1.inject(types_1.TYPES.MessageResponder)),
-    __param(1, inversify_1.inject(types_1.TYPES.urlService)),
-    __param(2, inversify_1.inject(types_1.TYPES.QueueService)),
+    __param(1, inversify_1.inject(types_1.TYPES.QueueService)),
     __metadata("design:paramtypes", [message_responder_1.MessageResponder,
-        urlService_1.urlService,
         queueService_1.QueueService])
 ], ReneBot);
 exports.ReneBot = ReneBot;

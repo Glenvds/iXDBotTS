@@ -20,7 +20,7 @@ const rene_bot_1 = require("./services/rene/rene_bot");
 let container = new inversify_1.Container();
 container.bind(types_1.TYPES.Bot).to(bot_1.Bot).inSingletonScope();
 container.bind(types_1.TYPES.Client).toConstantValue(new discord_js_1.Client());
-container.bind(types_1.TYPES.Token).toConstantValue("bQ7kVGxZkR0LoE7IM5v1VZ5mgc-IPeTg" || process.env.TOKEN);
+container.bind(types_1.TYPES.Token).toConstantValue("NjgwMDY4OTIzMzYxNzIyMzc2.XooJkQ.vDbM43aNWPglhtYRGwMlGP6GJRs" /* || process.env.TOKEN*/);
 container.bind(types_1.TYPES.MessageResponder).to(message_responder_1.MessageResponder).inSingletonScope();
 container.bind(types_1.TYPES.PingFinder).to(ping_finder_1.PingFinder).inSingletonScope();
 container.bind(types_1.TYPES.cmdService).to(cmdService_1.cmdService).inSingletonScope();

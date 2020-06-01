@@ -29,7 +29,7 @@ export class Bot {
     }
 
     public listen(): Promise<string> {
-        this.client.on("message", (message: Message) => {
+        this.client.on("message", async (message: Message) => {
             if (message.author.bot || !message.content.startsWith(this.prefix)) { return; }
 
             const args = message.content.split(" ");
@@ -64,7 +64,7 @@ export class Bot {
                         break;
 
                     case CommandType.Rene:
-                        this.ReneBot.executeNSFWCommand(requestedCommand, message);
+                        await this.ReneBot.executeNSFWCommand(requestedCommand, message);
                         break;
                 }
             } else {
