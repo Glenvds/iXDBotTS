@@ -20,7 +20,7 @@ let container = new Container();
 
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.Client).toConstantValue(new Client());
-container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
+container.bind<string>(TYPES.Token).toConstantValue("NjgwMDY4OTIzMzYxNzIyMzc2.XtTMdw.C1288lv21FCh8tQ3mZN2UCxPUAo" || process.env.TOKEN);
 container.bind<MessageResponder>(TYPES.MessageResponder).to(MessageResponder).inSingletonScope();
 container.bind<PingFinder>(TYPES.PingFinder).to(PingFinder).inSingletonScope();
 container.bind<cmdService>(TYPES.cmdService).to(cmdService).inSingletonScope();

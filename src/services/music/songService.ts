@@ -17,9 +17,9 @@ export class SongService {
         try {
             const requestURL = await this.getSongUrl(searchInput);
             try {
-                console.log(requestURL);
+                console.log("getInfoStreamYoutube", requestURL);
                 const songInfo = await this.ytService.getInfoStreamYoutube(requestURL);
-                return new Music({title: songInfo.title, url: songInfo.video_url, requester: requester, type: MusicTypes.Song});
+                return new Music({ title: songInfo.title, url: songInfo.video_url, requester: requester, type: MusicTypes.Song });
             } catch (err) {
                 console.log("Error in getSong() while getting songurl information from yt: " + err)
                 return;

@@ -21,17 +21,18 @@ export class ytService {
         return result;
     }
 
-    async getInfoStreamYoutube(url: string): Promise<iVideoInfo> {       
-        try{
+    async getInfoStreamYoutube(url: string): Promise<iVideoInfo> {
+        try {
             const result = await ytdl.getBasicInfo(url);
             return result;
-        } catch(err){
-            console.log("Error in ytService/getInfoStreamYoutube(): " + err);
+        } catch (err) {
+            console.log("Error in ytService/getInfoStreamYoutube(): ", err);
             return;
-        }        
+        }
     }
 
     async getStreamYoutube(music: Music): Promise<Readable> {
+        console.log("Getting YouTube stream", music.url);
         return await ytdl(music.url);
     }
 }

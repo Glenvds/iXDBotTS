@@ -38,13 +38,14 @@ let ytService = class ytService {
                 return result;
             }
             catch (err) {
-                console.log("Error in ytService/getInfoStreamYoutube(): " + err);
+                console.log("Error in ytService/getInfoStreamYoutube(): ", err);
                 return;
             }
         });
     }
     getStreamYoutube(music) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("Getting YouTube stream", music.url);
             return yield ytdl(music.url);
         });
     }

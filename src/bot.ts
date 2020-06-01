@@ -30,45 +30,49 @@ export class Bot {
 
     public listen(): Promise<string> {
         this.client.on("message", async (message: Message) => {
-            if (message.author.bot || !message.content.startsWith(this.prefix)) { return; }
+            try {
+                if (message.author.bot || !message.content.startsWith(this.prefix)) { return; }
 
-            const args = message.content.split(" ");
-            const inputCommand = args[0].split(this.prefix)[1].toLocaleLowerCase();
+                const args = message.content.split(" ");
+                const inputCommand = args[0].split(this.prefix)[1].toLocaleLowerCase();
 
-            const requestedCommand: Command = this.cmdService.getCommand(inputCommand);
-            const msgTextChannel: TextChannel = message.channel as TextChannel;
+                const requestedCommand: Command = this.cmdService.getCommand(inputCommand);
+                const msgTextChannel: TextChannel = message.channel as TextChannel;
 
-            if (requestedCommand) {
-                switch (requestedCommand.type) {
-                    case CommandType.Music:
-                        if (!this.musicChannels.includes(msgTextChannel.id)) {
-                            this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
-                        }
-                        else {
-                            const usrVoiceChannel = message.member.voice.channel;
-                            if (!usrVoiceChannel) {
-                                this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute music commands!");
+                if (requestedCommand) {
+                    switch (requestedCommand.type) {
+                        case CommandType.Music:
+                            if (!this.musicChannels.includes(msgTextChannel.id)) {
+                                this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                             }
-                            else { this.MusicBot.executeMusicCommand(requestedCommand, message); }
-                        }
-                        break;
+                            else {
+                                const usrVoiceChannel = message.member.voice.channel;
+                                if (!usrVoiceChannel) {
+                                    this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute music commands!");
+                                }
+                                else { this.MusicBot.executeMusicCommand(requestedCommand, message); }
+                            }
+                            break;
 
-                    case CommandType.NSFW:
-                        if (!msgTextChannel.nsfw) {
-                            this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the NSFW channel!")
-                        }
-                        else { this.NSFWBot.executeNSFWCommand(requestedCommand, message); } break;
+                        case CommandType.NSFW:
+                            if (!msgTextChannel.nsfw) {
+                                this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the NSFW channel!")
+                            }
+                            else { this.NSFWBot.executeNSFWCommand(requestedCommand, message); } break;
 
-                    case CommandType.General:
-                        this.GeneralBot.executeGeneralCommand(requestedCommand, message);
-                        break;
+                        case CommandType.General:
+                            this.GeneralBot.executeGeneralCommand(requestedCommand, message);
+                            break;
 
-                    case CommandType.Rene:
-                        await this.ReneBot.executeNSFWCommand(requestedCommand, message);
-                        break;
+                        case CommandType.Rene:
+                            await this.ReneBot.executeNSFWCommand(requestedCommand, message);
+                            break;
+                    }
+                } else {
+                    this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
                 }
-            } else {
-                this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
+            } catch (ex) {
+                console.error(ex);
             }
         });
         return this.client.login(this.token);
