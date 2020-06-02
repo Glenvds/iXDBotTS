@@ -38,7 +38,7 @@ export class ReneBot {
         try {
             const input = this.messageResponder.getContentOfMessage(message);
             //const randomSound = this.getSound(input);
-            const randomSound = this.getSound(input);
+            const randomSound = this.getSoundPath(input);
 
             var connection = await channel.join();
             var streamDispatcher = connection.play(randomSound);
@@ -72,7 +72,7 @@ export class ReneBot {
         return createReadStream(randomFile);
     }
 
-    getSoundPath(filter: string = null): String{
+    getSoundPath(filter: string = null): string{
         var filteredFiles = filter ? this.files.filter(x => x.indexOf(filter) > 0) : this.files;
         if (!filteredFiles.length) return;
 

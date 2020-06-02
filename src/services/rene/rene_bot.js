@@ -49,7 +49,7 @@ let ReneBot = class ReneBot {
             try {
                 const input = this.messageResponder.getContentOfMessage(message);
                 //const randomSound = this.getSound(input);
-                const randomSound = this.getSound(input);
+                const randomSound = this.getSoundPath(input);
                 var connection = yield channel.join();
                 var streamDispatcher = connection.play(randomSound);
                 streamDispatcher.on("error", (err) => {
