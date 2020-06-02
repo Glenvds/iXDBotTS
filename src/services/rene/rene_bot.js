@@ -39,17 +39,14 @@ let ReneBot = class ReneBot {
         this.files = fs_1.readdirSync(this.directory);
         // console.log("Loaded files for rene", this.files);
     }
-    executeNSFWCommand(command, message) {
+    executeReneCommand(message) {
         return __awaiter(this, void 0, void 0, function* () {
             var channel = message.member.voice.channel;
-            if (!channel)
-                return; // No voice channel, too lazy for text quotes
             const guildId = message.guild.id;
             const serverQueue = this.queueService.getServerQueue(guildId);
             if (serverQueue)
                 return; // Song playing
             try {
-                const msgTextChannel = message.channel;
                 const input = this.messageResponder.getContentOfMessage(message);
                 const randomSound = this.getSound(input);
                 var connection = yield channel.join();

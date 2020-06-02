@@ -64,8 +64,7 @@ let Bot = class Bot {
                                 this.messageResponder.sendResponseToChannel(msgTextChannel, "This isn't the music channel!");
                             }
                             else {
-                                const usrVoiceChannel = message.member.voice.channel;
-                                if (!usrVoiceChannel) {
+                                if (this.isUserInVoiceChannel(message)) {
                                     this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute music commands!");
                                 }
                                 else {
@@ -85,7 +84,12 @@ let Bot = class Bot {
                             this.GeneralBot.executeGeneralCommand(requestedCommand, message);
                             break;
                         case command_1.CommandType.Rene:
-                            yield this.ReneBot.executeNSFWCommand(requestedCommand, message);
+                            if (this.isUserInVoiceChannel(message)) {
+                                this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute soundboard commands!");
+                            }
+                            else {
+                                yield this.ReneBot.executeReneCommand(message);
+                            }
                             break;
                     }
                 }
@@ -98,6 +102,9 @@ let Bot = class Bot {
             }
         }));
         return this.client.login(this.token);
+    }
+    isUserInVoiceChannel(message) {
+        return !message.member.voice.channel;
     }
 };
 Bot = __decorate([

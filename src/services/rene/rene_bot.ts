@@ -29,16 +29,13 @@ export class ReneBot {
         // console.log("Loaded files for rene", this.files);
     }
 
-    async executeNSFWCommand(command: Command, message: Message) {
+    async executeReneCommand(message: Message) {
         var channel = message.member.voice.channel;
-        if (!channel) return; // No voice channel, too lazy for text quotes
-
         const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);
         if (serverQueue) return; // Song playing
 
         try {
-            const msgTextChannel: TextChannel = message.channel as TextChannel;
             const input = this.messageResponder.getContentOfMessage(message);
             const randomSound = this.getSound(input);
 
