@@ -37,6 +37,7 @@ export class ReneBot {
 
         try {
             const input = this.messageResponder.getContentOfMessage(message);
+            //const randomSound = this.getSound(input);
             const randomSound = this.getSound(input);
 
             var connection = await channel.join();
@@ -69,5 +70,16 @@ export class ReneBot {
 
         console.log(`Playing ${randomFile}`);
         return createReadStream(randomFile);
+    }
+
+    getSoundPath(filter: string = null): String{
+        var filteredFiles = filter ? this.files.filter(x => x.indexOf(filter) > 0) : this.files;
+        if (!filteredFiles.length) return;
+
+        var randomFile = `${this.directory}/${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+
+        console.log(`Playing ${randomFile}`);
+        return randomFile;
+
     }
 }

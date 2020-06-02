@@ -48,6 +48,7 @@ let ReneBot = class ReneBot {
                 return; // Song playing
             try {
                 const input = this.messageResponder.getContentOfMessage(message);
+                //const randomSound = this.getSound(input);
                 const randomSound = this.getSound(input);
                 var connection = yield channel.join();
                 var streamDispatcher = connection.play(randomSound);
@@ -76,6 +77,14 @@ let ReneBot = class ReneBot {
         var randomFile = `${this.directory}/${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
         console.log(`Playing ${randomFile}`);
         return fs_1.createReadStream(randomFile);
+    }
+    getSoundPath(filter = null) {
+        var filteredFiles = filter ? this.files.filter(x => x.indexOf(filter) > 0) : this.files;
+        if (!filteredFiles.length)
+            return;
+        var randomFile = `${this.directory}/${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+        console.log(`Playing ${randomFile}`);
+        return randomFile;
     }
 };
 ReneBot = __decorate([
