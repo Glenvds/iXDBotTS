@@ -149,7 +149,12 @@ let MusicService = class MusicService {
                 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
             }
             else if (music.type === music_1.MusicTypes.SoundBoard) {
-                const dispatcher = serverQueue.getConnection().play(music.url);
+                const dispatcher = serverQueue.getConnection().play(music.url)
+                    .on("finish", () => {
+                    //console.log(music.title + " ended playing.");
+                    serverQueue.songs.shift();
+                    this.playSongsInChannel(guildId, serverQueue.songs[0]);
+                });
                 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             }
         });

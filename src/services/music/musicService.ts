@@ -79,8 +79,8 @@ export class MusicService {
             else {
                 serverQueue.addToQueue(randomSound);
                 return new ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
-            } 
-        } else if (!serverQueue){
+            }
+        } else if (!serverQueue) {
             await this.queueService.createMusicServerQueue(message, randomSound);
             await this.playSongsInChannel(guildId, randomSound);
         }
@@ -110,7 +110,7 @@ export class MusicService {
             serverQueue.voiceChannel.leave();
             this.queueService.removeServerQueue(guildId);
             return;
-        }        
+        }
 
         if (music.type === MusicTypes.Song) {
             //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
@@ -126,7 +126,12 @@ export class MusicService {
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
         } else if (music.type === MusicTypes.SoundBoard) {
-            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
+            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url)
+                .on("finish", () => {
+                    //console.log(music.title + " ended playing.");
+                    serverQueue.songs.shift();
+                    this.playSongsInChannel(guildId, serverQueue.songs[0])
+                });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         }
     }
