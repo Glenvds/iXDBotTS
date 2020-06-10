@@ -78,7 +78,7 @@ export class MusicService {
             if (this.isRadioPlayingOnGuild(guildId)) { return new ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio."); }
             else {
                 serverQueue.addToQueue(randomSound);
-                return new ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
+                //return new ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
             }
         } else if (!serverQueue) {
             await this.queueService.createMusicServerQueue(message, randomSound);
@@ -113,7 +113,7 @@ export class MusicService {
         }
 
         if (music.type === MusicTypes.Song) {
-            //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
+            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
             const ytStream = await this.ytService.getStreamYoutube(music);
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
                 .on("finish", () => {

@@ -102,7 +102,7 @@ let MusicService = class MusicService {
                 }
                 else {
                     serverQueue.addToQueue(randomSound);
-                    return new serviceResult_1.ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
+                    //return new ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
                 }
             }
             else if (!serverQueue) {
@@ -134,7 +134,7 @@ let MusicService = class MusicService {
                 return;
             }
             if (music.type === music_1.MusicTypes.Song) {
-                //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
+                this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
                 const ytStream = yield this.ytService.getStreamYoutube(music);
                 const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
                     .on("finish", () => {
