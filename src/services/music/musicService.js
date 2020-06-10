@@ -142,7 +142,8 @@ let MusicService = class MusicService {
                     serverQueue.songs.shift();
                     this.playSongsInChannel(guildId, serverQueue.songs[0]);
                 });
-                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+                //dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+                dispatcher.setVolumeDecibels(0.5);
             }
             else if (music.type === music_1.MusicTypes.Radio) {
                 const dispatcher = serverQueue.getConnection().play(music.url);
