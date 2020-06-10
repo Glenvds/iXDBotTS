@@ -83,14 +83,13 @@ let Bot = class Bot {
                         case command_1.CommandType.General:
                             this.GeneralBot.executeGeneralCommand(requestedCommand, message);
                             break;
-                        case command_1.CommandType.Rene:
+                        /*case CommandType.Rene:
                             if (this.isUserInVoiceChannel(message)) {
                                 this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute soundboard commands!");
+                            } else {
+                                await this.MusicBot.executeMusicCommand(requestedCommand, message);
                             }
-                            else {
-                                yield this.ReneBot.executeReneCommand(message);
-                            }
-                            break;
+                            break;*/
                     }
                 }
                 else {

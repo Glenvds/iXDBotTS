@@ -57,6 +57,9 @@ let MusicBot = class MusicBot {
             case "queue":
                 this.getQueue(message);
                 break;
+            case "rene":
+                this.playRene(message);
+                break;
         }
     }
     playSong(message) {
@@ -82,6 +85,15 @@ let MusicBot = class MusicBot {
                 return;
             }
             const serviceResult = yield this.musicService.playRadio(message);
+            if (serviceResult) {
+                this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message);
+            }
+        });
+    }
+    playRene(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const textChannel = message.channel;
+            const serviceResult = yield this.musicService.playRene(message);
             if (serviceResult) {
                 this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message);
             }

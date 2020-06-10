@@ -8,6 +8,7 @@ import { QueueType } from "../../models/music/QueueContruct";
 import { ServiceResult } from "../../models/general/serviceResult";
 import { Music, MusicTypes } from "../../models/music/music";
 import { ytService } from "./ytService";
+import { readdirSync } from "fs";
 
 
 
@@ -19,8 +20,10 @@ export class MusicService {
         new Music({ title: "stubru", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio }),
         new Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: MusicTypes.Radio }),
         new Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: MusicTypes.Radio }),
-        new Music({ title: "topradio", url: "http://loadbalancing.topradio.be/topradio.mp3", type: MusicTypes.Radio})
+        new Music({ title: "topradio", url: "http://loadbalancing.topradio.be/topradio.mp3", type: MusicTypes.Radio })
     ];
+
+    private reneFiles: string[];
 
     //private musicDecibels = 0.001;
 
@@ -28,6 +31,7 @@ export class MusicService {
         @inject(TYPES.SongService) private songService: SongService,
         @inject(TYPES.QueueService) private queueService: QueueService,
         @inject(TYPES.ytService) private ytService: ytService) {
+        this.generateFileList();
     }
 
     async playSong(message: Message): Promise<ServiceResult> {
@@ -65,6 +69,37 @@ export class MusicService {
         }
     }
 
+    async playRene(message: Message) {
+        const randomSound: Music = this.getReneFromMessage(message);
+        const guildId = message.guild.id;
+        const serverQueue = this.queueService.getServerQueue(guildId);
+
+        if (serverQueue) {
+            if (this.isRadioPlayingOnGuild(guildId)) { return new ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio."); }
+            else {
+                serverQueue.addToQueue(randomSound);
+                return new ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
+            } 
+        } else if (!serverQueue){
+            await this.queueService.createMusicServerQueue(message, randomSound);
+            await this.playSongsInChannel(guildId, randomSound);
+        }
+
+    }
+
+    private getReneFromMessage(message: Message): Music {
+        const filter = this.messageResponder.getContentOfMessage(message);
+
+        var filteredFiles = filter ? this.reneFiles.filter(x => x.indexOf(filter) > 0) : this.reneFiles;
+        if (!filteredFiles.length) return;
+
+        var randomFile = `${this.directory}/${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+        const title = "Rene:" + randomFile.substring(randomFile.indexOf("rene/") + 5);
+
+        console.log(`Playing ${randomFile}`);
+        return new Music({ title: title, type: MusicTypes.SoundBoard, url: randomFile, requester: message.author });
+    }
+
     async playSongsInChannel(guildId: string, music: Music) {
         const serverQueue = this.queueService.getServerQueue(guildId);
 
@@ -75,11 +110,10 @@ export class MusicService {
             serverQueue.voiceChannel.leave();
             this.queueService.removeServerQueue(guildId);
             return;
-        }
-
-        this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
+        }        
 
         if (music.type === MusicTypes.Song) {
+            //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
             const ytStream = await this.ytService.getStreamYoutube(music);
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
                 .on("finish", () => {
@@ -87,10 +121,13 @@ export class MusicService {
                     serverQueue.songs.shift();
                     this.playSongsInChannel(guildId, serverQueue.songs[0])
                 });
-            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5 ); /// DIT TESTEN!!!!
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
         } else if (music.type === MusicTypes.Radio) {
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+        } else if (music.type === MusicTypes.SoundBoard) {
+            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         }
     }
 
@@ -128,5 +165,14 @@ export class MusicService {
 
     isRadioPlayingOnGuild(guildId: string): boolean {
         return this.queueService.getServerQueue(guildId).type === QueueType.Radio;
+    }
+
+    private get directory() {
+        return `${process.cwd()}/src/assets/rene`;
+    }
+
+    private generateFileList() {
+        this.reneFiles = readdirSync(this.directory)
+        // console.log("Loaded files for rene", this.files);
     }
 }

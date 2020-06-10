@@ -30,6 +30,7 @@ const QueueContruct_1 = require("../../models/music/QueueContruct");
 const serviceResult_1 = require("../../models/general/serviceResult");
 const music_1 = require("../../models/music/music");
 const ytService_1 = require("./ytService");
+const fs_1 = require("fs");
 let MusicService = class MusicService {
     //private musicDecibels = 0.001;
     constructor(messageResponder, songService, queueService, ytService) {
@@ -43,6 +44,7 @@ let MusicService = class MusicService {
             new music_1.Music({ title: "radio1", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio }),
             new music_1.Music({ title: "topradio", url: "http://loadbalancing.topradio.be/topradio.mp3", type: music_1.MusicTypes.Radio })
         ];
+        this.generateFileList();
     }
     playSong(message) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -89,6 +91,36 @@ let MusicService = class MusicService {
             }
         });
     }
+    playRene(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const randomSound = this.getReneFromMessage(message);
+            const guildId = message.guild.id;
+            const serverQueue = this.queueService.getServerQueue(guildId);
+            if (serverQueue) {
+                if (this.isRadioPlayingOnGuild(guildId)) {
+                    return new serviceResult_1.ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
+                }
+                else {
+                    serverQueue.addToQueue(randomSound);
+                    return new serviceResult_1.ServiceResult(true, `${randomSound.title} has beed added to the queue.`);
+                }
+            }
+            else if (!serverQueue) {
+                yield this.queueService.createMusicServerQueue(message, randomSound);
+                yield this.playSongsInChannel(guildId, randomSound);
+            }
+        });
+    }
+    getReneFromMessage(message) {
+        const filter = this.messageResponder.getContentOfMessage(message);
+        var filteredFiles = filter ? this.reneFiles.filter(x => x.indexOf(filter) > 0) : this.reneFiles;
+        if (!filteredFiles.length)
+            return;
+        var randomFile = `${this.directory}/${filteredFiles[Math.floor(Math.random() * filteredFiles.length)]}`;
+        const title = "Rene:" + randomFile.substring(randomFile.indexOf("rene/") + 5);
+        console.log(`Playing ${randomFile}`);
+        return new music_1.Music({ title: title, type: music_1.MusicTypes.SoundBoard, url: randomFile, requester: message.author });
+    }
     playSongsInChannel(guildId, music) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverQueue = this.queueService.getServerQueue(guildId);
@@ -101,8 +133,8 @@ let MusicService = class MusicService {
                 this.queueService.removeServerQueue(guildId);
                 return;
             }
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
             if (music.type === music_1.MusicTypes.Song) {
+                //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
                 const ytStream = yield this.ytService.getStreamYoutube(music);
                 const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
                     .on("finish", () => {
@@ -115,6 +147,10 @@ let MusicService = class MusicService {
             else if (music.type === music_1.MusicTypes.Radio) {
                 const dispatcher = serverQueue.getConnection().play(music.url);
                 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+            }
+            else if (music.type === music_1.MusicTypes.SoundBoard) {
+                const dispatcher = serverQueue.getConnection().play(music.url);
+                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             }
         });
     }
@@ -151,6 +187,13 @@ let MusicService = class MusicService {
     }
     isRadioPlayingOnGuild(guildId) {
         return this.queueService.getServerQueue(guildId).type === QueueContruct_1.QueueType.Radio;
+    }
+    get directory() {
+        return `${process.cwd()}/src/assets/rene`;
+    }
+    generateFileList() {
+        this.reneFiles = fs_1.readdirSync(this.directory);
+        // console.log("Loaded files for rene", this.files);
     }
 };
 MusicService = __decorate([

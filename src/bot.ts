@@ -64,13 +64,13 @@ export class Bot {
                             this.GeneralBot.executeGeneralCommand(requestedCommand, message);
                             break;
 
-                        case CommandType.Rene:
+                        /*case CommandType.Rene:
                             if (this.isUserInVoiceChannel(message)) {
                                 this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute soundboard commands!");
                             } else {
-                                await this.ReneBot.executeReneCommand(message);
+                                await this.MusicBot.executeMusicCommand(requestedCommand, message);
                             }
-                            break;
+                            break;*/
                     }
                 } else {
                     this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");

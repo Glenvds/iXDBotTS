@@ -3,7 +3,8 @@ import { User } from "discord.js";
 
 export enum MusicTypes{
     Radio = "radio",
-    Song = "song"
+    Song = "song",
+    SoundBoard = "soundboard"
 }
 
 export class MusicOptions{

@@ -4,6 +4,7 @@ var MusicTypes;
 (function (MusicTypes) {
     MusicTypes["Radio"] = "radio";
     MusicTypes["Song"] = "song";
+    MusicTypes["SoundBoard"] = "soundboard";
 })(MusicTypes = exports.MusicTypes || (exports.MusicTypes = {}));
 class MusicOptions {
 }

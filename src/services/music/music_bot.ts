@@ -26,6 +26,7 @@ export class MusicBot {
             case "next": this.skip(message); break;
             case "stop": this.stop(message); break;
             case "queue": this.getQueue(message); break;
+            case "rene": this.playRene(message); break;
         }
     }
 
@@ -44,9 +45,16 @@ export class MusicBot {
         const textChannel = message.channel as TextChannel;
         const contentOfMessage = this.messageResponder.getContentOfMessage(message);
 
-        if (!contentOfMessage) { this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.musicService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n")); return;}
+        if (!contentOfMessage) { this.messageResponder.sendMultipleLineResponseToChannel(textChannel, this.musicService.getPossibleRadioStationsAsString("Need to give a radio station! (ex. !playradio stubru)\n Possible options: \n")); return; }
 
         const serviceResult = await this.musicService.playRadio(message);
+        if (serviceResult) { this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message); }
+    }
+
+    private async playRene(message: Message) {
+        const textChannel = message.channel as TextChannel;
+
+        const serviceResult = await this.musicService.playRene(message);
         if (serviceResult) { this.messageResponder.sendResponseToChannel(textChannel, serviceResult.message); }
     }
 
