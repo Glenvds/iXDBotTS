@@ -21,7 +21,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const rene_bot_1 = require("./services/rene/rene_bot");
 const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
 const types_1 = require("./types");
@@ -32,7 +31,7 @@ const music_bot_1 = require("./services/music/music_bot");
 const nsfw_bot_1 = require("./services/nsfw/nsfw_bot");
 const general_bot_1 = require("./services/general/general_bot");
 let Bot = class Bot {
-    constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot, GeneralBot, ReneBot) {
+    constructor(client, token, messageResponder, cmdService, MusicBot, NSFWBot, GeneralBot) {
         this.client = client;
         this.token = token;
         this.messageResponder = messageResponder;
@@ -40,7 +39,6 @@ let Bot = class Bot {
         this.MusicBot = MusicBot;
         this.NSFWBot = NSFWBot;
         this.GeneralBot = GeneralBot;
-        this.ReneBot = ReneBot;
         this.prefix = "!";
         this.iXDmusicChannelId = "312940674133655552"; // REAL 312940674133655552
         this.MCmusicChannelId = "709788673423441993"; // FAST IMPLEMENTATION FOR MC SERVER 709788673423441993
@@ -83,13 +81,6 @@ let Bot = class Bot {
                         case command_1.CommandType.General:
                             this.GeneralBot.executeGeneralCommand(requestedCommand, message);
                             break;
-                        /*case CommandType.Rene:
-                            if (this.isUserInVoiceChannel(message)) {
-                                this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute soundboard commands!");
-                            } else {
-                                await this.MusicBot.executeMusicCommand(requestedCommand, message);
-                            }
-                            break;*/
                     }
                 }
                 else {
@@ -128,13 +119,11 @@ Bot = __decorate([
     __param(4, inversify_1.inject(types_1.TYPES.MusicBot)),
     __param(5, inversify_1.inject(types_1.TYPES.NSFWBot)),
     __param(6, inversify_1.inject(types_1.TYPES.GeneralBot)),
-    __param(7, inversify_1.inject(types_1.TYPES.ReneBot)),
     __metadata("design:paramtypes", [discord_js_1.Client, String, message_responder_1.MessageResponder,
         cmdService_1.cmdService,
         music_bot_1.MusicBot,
         nsfw_bot_1.NSFWBot,
-        general_bot_1.GeneralBot,
-        rene_bot_1.ReneBot])
+        general_bot_1.GeneralBot])
 ], Bot);
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map

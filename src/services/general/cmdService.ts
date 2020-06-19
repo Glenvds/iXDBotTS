@@ -17,7 +17,7 @@ export class cmdService {
         new Command(CommandType.Music, "radio"),
         new Command(CommandType.General, "minecraft"),
         new Command(CommandType.General, "mc"),
-        new Command(CommandType.Music, "rene")
+        new Command(CommandType.Music, "rene"),
         //new Command(CommandType.General, "help")
     ]
 

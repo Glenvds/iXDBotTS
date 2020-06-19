@@ -24,8 +24,7 @@ export class Bot {
         @inject(TYPES.cmdService) private cmdService: cmdService,
         @inject(TYPES.MusicBot) private MusicBot: MusicBot,
         @inject(TYPES.NSFWBot) private NSFWBot: NSFWBot,
-        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot,
-        @inject(TYPES.ReneBot) private ReneBot: ReneBot) {
+        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot) {
     }
 
     public listen(): Promise<string> {
@@ -64,14 +63,6 @@ export class Bot {
                         case CommandType.General:
                             this.GeneralBot.executeGeneralCommand(requestedCommand, message);
                             break;
-
-                        /*case CommandType.Rene:
-                            if (this.isUserInVoiceChannel(message)) {
-                                this.messageResponder.sendResponseToChannel(msgTextChannel, "You need to be in a voice channel to execute soundboard commands!");
-                            } else {
-                                await this.MusicBot.executeMusicCommand(requestedCommand, message);
-                            }
-                            break;*/
                     }
                 } else {
                     this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
