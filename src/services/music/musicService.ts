@@ -106,7 +106,7 @@ export class MusicService {
         if (!serverQueue) { return; }
 
         if (!music) {
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving.");
+            //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving.");
             //serverQueue.voiceChannel.leave();
             this.queueService.removeServerQueue(guildId);
             return;
