@@ -24,15 +24,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const types_1 = require("../../types");
 const QueueContruct_1 = require("../../models/music/QueueContruct");
-const urlService_1 = require("../general/urlService");
-const ytService_1 = require("./ytService");
 const message_responder_1 = require("../general/message-responder");
 const queueService_1 = require("./queueService");
 const musicService_1 = require("./musicService");
 let MusicBot = class MusicBot {
-    constructor(urlService, ytService, messageResponder, queueService, musicService) {
-        this.urlService = urlService;
-        this.ytService = ytService;
+    constructor(messageResponder, queueService, musicService) {
         this.messageResponder = messageResponder;
         this.queueService = queueService;
         this.musicService = musicService;
@@ -52,14 +48,21 @@ let MusicBot = class MusicBot {
                 this.skip(message);
                 break;
             case "stop":
-                this.stop(message);
+                this.stop(message.guild.id);
                 break;
             case "queue":
-                this.getQueue(message);
+                this.respondQueue(message);
                 break;
             case "rene":
                 this.playRene(message);
                 break;
+        }
+    }
+    checkForEmptyVoiceChannel(guildId) {
+        const serverQueue = this.queueService.getServerQueue(guildId);
+        const voiceChannel = serverQueue.getVoiceChannel();
+        if (voiceChannel.members.size == 0) {
+            this.stop(guildId);
         }
     }
     playSong(message) {
@@ -99,7 +102,7 @@ let MusicBot = class MusicBot {
             }
         });
     }
-    getQueue(message) {
+    respondQueue(message) {
         const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);
         const textChannel = message.channel;
@@ -138,8 +141,8 @@ let MusicBot = class MusicBot {
             serverQueue.getConnection().dispatcher.end();
         }
     }
-    stop(message) {
-        const guildId = message.guild.id;
+    stop(guildId) {
+        //const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);
         if (!serverQueue) {
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!");
@@ -151,14 +154,10 @@ let MusicBot = class MusicBot {
 };
 MusicBot = __decorate([
     inversify_1.injectable(),
-    __param(0, inversify_1.inject(types_1.TYPES.urlService)),
-    __param(1, inversify_1.inject(types_1.TYPES.ytService)),
-    __param(2, inversify_1.inject(types_1.TYPES.MessageResponder)),
-    __param(3, inversify_1.inject(types_1.TYPES.QueueService)),
-    __param(4, inversify_1.inject(types_1.TYPES.MusicService)),
-    __metadata("design:paramtypes", [urlService_1.urlService,
-        ytService_1.ytService,
-        message_responder_1.MessageResponder,
+    __param(0, inversify_1.inject(types_1.TYPES.MessageResponder)),
+    __param(1, inversify_1.inject(types_1.TYPES.QueueService)),
+    __param(2, inversify_1.inject(types_1.TYPES.MusicService)),
+    __metadata("design:paramtypes", [message_responder_1.MessageResponder,
         queueService_1.QueueService,
         musicService_1.MusicService])
 ], MusicBot);

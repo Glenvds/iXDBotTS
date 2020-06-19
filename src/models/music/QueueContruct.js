@@ -48,6 +48,9 @@ let QueueContruct = QueueContruct_1 = class QueueContruct extends QueueContructO
     getConnection() {
         return this.connection;
     }
+    getVoiceChannel() {
+        return this.voiceChannel;
+    }
     static create(options) {
         return __awaiter(this, void 0, void 0, function* () {
             const queueContruct = new QueueContruct_1(options);

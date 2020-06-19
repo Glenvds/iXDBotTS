@@ -44,6 +44,10 @@ export class QueueContruct extends QueueContructOptions {
     getConnection(): VoiceConnection{
         return this.connection;
     }
+
+    getVoiceChannel(): VoiceChannel{
+        return this.voiceChannel;
+    }
     
     static async create(options: QueueContructOptions): Promise<QueueContruct>{
         const queueContruct = new QueueContruct(options);

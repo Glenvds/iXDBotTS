@@ -100,6 +100,10 @@ let Bot = class Bot {
                 console.error(ex);
             }
         }));
+        this.client.on("voiceStateUpdate", (oldMember, newMember) => {
+            let oldGuildId = oldMember.guild.id;
+            this.MusicBot.checkForEmptyVoiceChannel(oldGuildId);
+        });
         return this.client.login(this.token);
     }
     isUserInVoiceChannel(message) {

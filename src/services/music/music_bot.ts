@@ -12,9 +12,7 @@ import { Music } from "../../models/music/music";
 
 @injectable()
 export class MusicBot {
-    constructor(@inject(TYPES.urlService) private urlService: urlService,
-        @inject(TYPES.ytService) private ytService: ytService,
-        @inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
+    constructor(@inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
         @inject(TYPES.QueueService) private queueService: QueueService,
         @inject(TYPES.MusicService) private musicService: MusicService) { }
 
@@ -24,9 +22,17 @@ export class MusicBot {
             case "radio": this.playRadio(message); break;
             case "skip": this.skip(message); break;
             case "next": this.skip(message); break;
-            case "stop": this.stop(message); break;
-            case "queue": this.getQueue(message); break;
+            case "stop": this.stop(message.guild.id); break;
+            case "queue": this.respondQueue(message); break;
             case "rene": this.playRene(message); break;
+        }
+    }
+
+    checkForEmptyVoiceChannel(guildId: string){
+        const serverQueue: QueueContruct = this.queueService.getServerQueue(guildId);
+        const voiceChannel: VoiceChannel = serverQueue.getVoiceChannel();
+        if(voiceChannel.members.size == 0){
+            this.stop(guildId);
         }
     }
 
@@ -59,7 +65,7 @@ export class MusicBot {
     }
 
 
-    private getQueue(message: Message) {
+    private respondQueue(message: Message) {
 
         const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);
@@ -94,8 +100,8 @@ export class MusicBot {
         }
     }
 
-    private stop(message: Message) {
-        const guildId = message.guild.id;
+    private stop(guildId: string) {
+        //const guildId = message.guild.id;
         const serverQueue: QueueContruct = this.queueService.getServerQueue(guildId);
 
         if (!serverQueue) { this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!"); return; }
