@@ -28,11 +28,17 @@ export class MusicBot {
         }
     }
 
-    checkForEmptyVoiceChannel(guildId: string){
+    checkForEmptyVoiceChannel(guildId: string) {
         const serverQueue: QueueContruct = this.queueService.getServerQueue(guildId);
-        const voiceChannel: VoiceChannel = serverQueue.getVoiceChannel();
-        if(voiceChannel.members.size == 0){
-            this.stop(guildId);
+        console.log("SERVERQUEUE: " + serverQueue);
+        if (serverQueue) {
+            const voiceChannel: VoiceChannel = serverQueue.getVoiceChannel();
+            console.log("VOICECH: " + voiceChannel.id);
+            console.log("VOICECH SIZE: " + voiceChannel.members.size)
+            if (voiceChannel.members.size == 1) {
+                console.log("BOT SHOULD STOP HERE");
+                this.stop(guildId);
+            }
         }
     }
 
@@ -107,6 +113,7 @@ export class MusicBot {
         if (!serverQueue) { this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "There is nothing to stop!"); return; }
 
         serverQueue.getConnection().dispatcher.end();
+        serverQueue.voiceChannel.leave();
         this.queueService.removeServerQueue(guildId);
     }
 }

@@ -60,9 +60,15 @@ let MusicBot = class MusicBot {
     }
     checkForEmptyVoiceChannel(guildId) {
         const serverQueue = this.queueService.getServerQueue(guildId);
-        const voiceChannel = serverQueue.getVoiceChannel();
-        if (voiceChannel.members.size == 0) {
-            this.stop(guildId);
+        console.log("SERVERQUEUE: " + serverQueue);
+        if (serverQueue) {
+            const voiceChannel = serverQueue.getVoiceChannel();
+            console.log("VOICECH: " + voiceChannel.id);
+            console.log("VOICECH SIZE: " + voiceChannel.members.size);
+            if (voiceChannel.members.size == 1) {
+                console.log("BOT SHOULD STOP HERE");
+                this.stop(guildId);
+            }
         }
     }
     playSong(message) {
@@ -149,6 +155,7 @@ let MusicBot = class MusicBot {
             return;
         }
         serverQueue.getConnection().dispatcher.end();
+        serverQueue.voiceChannel.leave();
         this.queueService.removeServerQueue(guildId);
     }
 };

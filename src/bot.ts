@@ -81,7 +81,9 @@ export class Bot {
         });
 
         this.client.on("voiceStateUpdate", (oldMember, newMember) => {
+            
             let oldGuildId = oldMember.guild.id;
+            console.log("VOICE STATE UPDATED AA SKAAN: " + oldGuildId);
             this.MusicBot.checkForEmptyVoiceChannel(oldGuildId);
         });
 
