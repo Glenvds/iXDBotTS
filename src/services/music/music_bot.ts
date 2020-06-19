@@ -28,15 +28,18 @@ export class MusicBot {
         }
     }
 
-    checkForEmptyVoiceChannel(guildId: string) {
+    isBotPlayingInGuild(guildId: string) : Boolean{
         const serverQueue: QueueContruct = this.queueService.getServerQueue(guildId);
-        console.log("SERVERQUEUE: " + serverQueue);
+        if(serverQueue){return true;}
+        return false;
+    }
+
+    leaveVoiceChannelWhilePlaying(guildId: string) {
+        const serverQueue: QueueContruct = this.queueService.getServerQueue(guildId);
+        
         if (serverQueue) {
-            const voiceChannel: VoiceChannel = serverQueue.getVoiceChannel();
-            console.log("VOICECH: " + voiceChannel.id);
-            console.log("VOICECH SIZE: " + voiceChannel.members.size)
+            const voiceChannel: VoiceChannel = serverQueue.getVoiceChannel();            
             if (voiceChannel.members.size == 1) {
-                console.log("BOT SHOULD STOP HERE");
                 this.stop(guildId);
             }
         }

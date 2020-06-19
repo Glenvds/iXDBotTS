@@ -101,9 +101,17 @@ let Bot = class Bot {
             }
         }));
         this.client.on("voiceStateUpdate", (oldMember, newMember) => {
+            //LEAVE VOICECHANNEL IF EMPTY
+            let oldChannel = oldMember.channel;
             let oldGuildId = oldMember.guild.id;
-            console.log("VOICE STATE UPDATED AA SKAAN: " + oldGuildId);
-            this.MusicBot.checkForEmptyVoiceChannel(oldGuildId);
+            if (oldChannel) {
+                if (this.MusicBot.isBotPlayingInGuild(oldGuildId)) {
+                    this.MusicBot.leaveVoiceChannelWhilePlaying(oldGuildId);
+                }
+                else if (oldChannel.members.size == 1) {
+                    oldChannel.leave();
+                }
+            }
         });
         return this.client.login(this.token);
     }
