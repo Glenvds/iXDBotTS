@@ -32,7 +32,7 @@ let NSFWBot = class NSFWBot {
         this.urlService = urlService;
         this.NSFW_BASEURLS = [
             new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Boobs, link: "http://media.oboobs.ru/boobs/", maxCount: 14678, needsPadding: 5 }),
-            new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Ass, link: "http://media.oboobs.ru/ass/", maxCount: 7417, needsPadding: 5 }),
+            new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Ass, link: "http://media.obutts.ru/butts/", maxCount: 7417, needsPadding: 5 }),
             new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Hentai, link: "https://s9v7j7a4.ssl.hwcdn.net/galleries/full/02/8b/a4/028ba4c4d9b039efffa26a6daec2ca06/", maxCount: 19 }),
             new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Hentai, link: "https://s9v7j7a4.ssl.hwcdn.net/galleries/full/ee/1f/93/ee1f93b2562d56ac3a681ce4b3abb7b2/", maxCount: 19 }),
             new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Hentai, link: "https://s9v7j7a4.ssl.hwcdn.net/galleries/full/f4/f2/ff/f4f2ff1ace17d02bfaab856948a6c7aa/", maxCount: 19 }),
@@ -52,9 +52,11 @@ let NSFWBot = class NSFWBot {
     }
     getRandomUrlOfType(type) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(type);
             const typeList = this.NSFW_BASEURLS.filter(x => x.type === type);
             const nsfwLink = typeList[Math.floor(Math.random() * typeList.length)];
             let NSFWUrl = nsfwLink.link + this.generateNumber(nsfwLink) + nsfwLink.extension;
+            console.log(NSFWUrl);
             if (yield this.urlService.testUrl(NSFWUrl)) {
                 return NSFWUrl;
             }
