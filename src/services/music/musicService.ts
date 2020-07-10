@@ -4,11 +4,13 @@ import { Message, StreamDispatcher } from "discord.js";
 import { MessageResponder } from "../general/message-responder";
 import { SongService } from "./songService";
 import { QueueService } from "./queueService";
-import { QueueType } from "../../models/music/QueueContruct";
+import { QueueType, QueueContruct } from "../../models/music/QueueContruct";
 import { ServiceResult } from "../../models/general/serviceResult";
 import { Music, MusicTypes } from "../../models/music/music";
 import { ytService } from "./ytService";
 import { readdirSync } from "fs";
+import { musicAPI } from "../api/musicAPI";
+
 
 
 
@@ -30,11 +32,13 @@ export class MusicService {
     constructor(@inject(TYPES.MessageResponder) private messageResponder: MessageResponder,
         @inject(TYPES.SongService) private songService: SongService,
         @inject(TYPES.QueueService) private queueService: QueueService,
-        @inject(TYPES.ytService) private ytService: ytService) {
+        @inject(TYPES.ytService) private ytService: ytService,
+        @inject(TYPES.musicAPI) private musicAPI: musicAPI) {
         this.generateFileList();
     }
 
     async playSong(message: Message): Promise<ServiceResult> {
+
         const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);
 
@@ -45,6 +49,7 @@ export class MusicService {
             if (this.isRadioPlayingOnGuild(guildId)) { return new ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio."); }
             else {
                 serverQueue.addToQueue(song);
+                this.updateMusicData(serverQueue);
                 return new ServiceResult(true, `${song.title} has beed added to the queue.`);
             }
         } else if (!serverQueue) {
@@ -73,6 +78,7 @@ export class MusicService {
         const randomSound: Music = this.getReneFromMessage(message);
         const guildId = message.guild.id;
         const serverQueue = this.queueService.getServerQueue(guildId);
+        this.updateMusicData(serverQueue);
 
         if (serverQueue) {
             if (this.isRadioPlayingOnGuild(guildId)) { return new ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio."); }
@@ -108,11 +114,13 @@ export class MusicService {
         if (!music) {
             //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving.");
             //serverQueue.voiceChannel.leave();
+            this.updateMusicData(serverQueue);
             this.queueService.removeServerQueue(guildId);
             return;
         }
 
         if (music.type === MusicTypes.Song) {
+            this.updateMusicData(serverQueue);
             this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
             const ytStream = await this.ytService.getStreamYoutube(music);
             const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
@@ -139,6 +147,7 @@ export class MusicService {
 
     async playRadioInChannel(guildId: string, music: Music) {
         const serverQueue = this.queueService.getServerQueue(guildId);
+        this.updateMusicData(serverQueue);
         const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
         dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     }
@@ -180,5 +189,9 @@ export class MusicService {
     private generateFileList() {
         this.reneFiles = readdirSync(this.directory)
         // console.log("Loaded files for rene", this.files);
+    }
+
+    private updateMusicData(queue: QueueContruct) {
+        this.musicAPI.sendMusicData(queue.songs);
     }
 }

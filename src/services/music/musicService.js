@@ -31,13 +31,15 @@ const serviceResult_1 = require("../../models/general/serviceResult");
 const music_1 = require("../../models/music/music");
 const ytService_1 = require("./ytService");
 const fs_1 = require("fs");
+const musicAPI_1 = require("../api/musicAPI");
 let MusicService = class MusicService {
     //private musicDecibels = 0.001;
-    constructor(messageResponder, songService, queueService, ytService) {
+    constructor(messageResponder, songService, queueService, ytService, musicAPI) {
         this.messageResponder = messageResponder;
         this.songService = songService;
         this.queueService = queueService;
         this.ytService = ytService;
+        this.musicAPI = musicAPI;
         this.RADIO_STATIONS = [
             new music_1.Music({ title: "stubru", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio }),
             new music_1.Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: music_1.MusicTypes.Radio }),
@@ -60,6 +62,7 @@ let MusicService = class MusicService {
                 }
                 else {
                     serverQueue.addToQueue(song);
+                    this.updateMusicData(serverQueue);
                     return new serviceResult_1.ServiceResult(true, `${song.title} has beed added to the queue.`);
                 }
             }
@@ -96,6 +99,7 @@ let MusicService = class MusicService {
             const randomSound = this.getReneFromMessage(message);
             const guildId = message.guild.id;
             const serverQueue = this.queueService.getServerQueue(guildId);
+            this.updateMusicData(serverQueue);
             if (serverQueue) {
                 if (this.isRadioPlayingOnGuild(guildId)) {
                     return new serviceResult_1.ServiceResult(false, "Can't queue songs while radio is playing! Use !stop to stop the radio.");
@@ -130,10 +134,12 @@ let MusicService = class MusicService {
             if (!music) {
                 //this.messageResponder.sendResponseToChannel(serverQueue.textChannel, "Ran out of songs, I'm leaving.");
                 //serverQueue.voiceChannel.leave();
+                this.updateMusicData(serverQueue);
                 this.queueService.removeServerQueue(guildId);
                 return;
             }
             if (music.type === music_1.MusicTypes.Song) {
+                this.updateMusicData(serverQueue);
                 this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
                 const ytStream = yield this.ytService.getStreamYoutube(music);
                 const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
@@ -163,6 +169,7 @@ let MusicService = class MusicService {
     playRadioInChannel(guildId, music) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverQueue = this.queueService.getServerQueue(guildId);
+            this.updateMusicData(serverQueue);
             const dispatcher = serverQueue.getConnection().play(music.url);
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
         });
@@ -201,6 +208,9 @@ let MusicService = class MusicService {
         this.reneFiles = fs_1.readdirSync(this.directory);
         // console.log("Loaded files for rene", this.files);
     }
+    updateMusicData(queue) {
+        this.musicAPI.sendMusicData(queue.songs);
+    }
 };
 MusicService = __decorate([
     inversify_1.injectable(),
@@ -208,10 +218,12 @@ MusicService = __decorate([
     __param(1, inversify_1.inject(types_1.TYPES.SongService)),
     __param(2, inversify_1.inject(types_1.TYPES.QueueService)),
     __param(3, inversify_1.inject(types_1.TYPES.ytService)),
+    __param(4, inversify_1.inject(types_1.TYPES.musicAPI)),
     __metadata("design:paramtypes", [message_responder_1.MessageResponder,
         songService_1.SongService,
         queueService_1.QueueService,
-        ytService_1.ytService])
+        ytService_1.ytService,
+        musicAPI_1.musicAPI])
 ], MusicService);
 exports.MusicService = MusicService;
 //# sourceMappingURL=musicService.js.map

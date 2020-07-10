@@ -1,21 +1,21 @@
 import { User } from "discord.js";
 
 
-export enum MusicTypes{
+export enum MusicTypes {
     Radio = "radio",
     Song = "song",
     SoundBoard = "soundboard"
 }
 
-export class MusicOptions{
+export class MusicOptions {
     title: string;
     type: MusicTypes;
     url: string;
     requester?: User;
 }
 
-export class Music extends MusicOptions{
-    constructor(options: MusicOptions){
+export class Music extends MusicOptions {
+    constructor(options: MusicOptions) {
         super();
         Object.assign(this, options);
     }

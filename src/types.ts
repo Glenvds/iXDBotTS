@@ -16,5 +16,6 @@ export const TYPES = {
   MusicService: Symbol("MusicService"),
   SongService: Symbol("SongService"),
   GeneralBot: Symbol("GeneralBot"),
-  ReneBot: Symbol("ReneBot")
+  ReneBot: Symbol("ReneBot"),
+  musicAPI: Symbol("musicAPI")
 };
