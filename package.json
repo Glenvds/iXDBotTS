@@ -16,7 +16,7 @@
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "inversify": "^5.0.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "npm-check-updates": "^6.0.1",
     "prism-media": "^1.2.2",
     "reflect-metadata": "^0.1.13",
