@@ -19,6 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 var QueueContruct_1;
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueContruct = exports.QueueContructOptions = exports.QueueType = void 0;
 const inversify_1 = require("inversify");
 var QueueType;
 (function (QueueType) {

@@ -18,6 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.urlService = void 0;
 const inversify_1 = require("inversify");
 const fetch = require('node-fetch');
 let urlService = class urlService {

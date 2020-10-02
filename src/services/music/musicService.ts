@@ -10,6 +10,7 @@ import { Music, MusicTypes } from "../../models/music/music";
 import { ytService } from "./ytService";
 import { readdirSync } from "fs";
 import { musicAPI } from "../api/musicAPI";
+import { LoggerService } from "../general/loggerService";
 
 
 
@@ -33,7 +34,8 @@ export class MusicService {
         @inject(TYPES.SongService) private songService: SongService,
         @inject(TYPES.QueueService) private queueService: QueueService,
         @inject(TYPES.ytService) private ytService: ytService,
-        @inject(TYPES.musicAPI) private musicAPI: musicAPI) {
+        @inject(TYPES.musicAPI) private musicAPI: musicAPI,
+        @inject(TYPES.LoggerService) private LoggerService: LoggerService) {
         this.generateFileList();
     }
 
@@ -118,30 +120,34 @@ export class MusicService {
             this.queueService.removeServerQueue(guildId);
             return;
         }
-
-        if (music.type === MusicTypes.Song) {
-            this.updateMusicData(serverQueue);
-            this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
-            const ytStream = await this.ytService.getStreamYoutube(music);
-            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
-                .on("finish", () => {
-                    console.log(music.title + " ended playing.");
-                    serverQueue.songs.shift();
-                    this.playSongsInChannel(guildId, serverQueue.songs[0])
-                });
-            //dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
-            dispatcher.setVolumeDecibels(0.5);
-        } else if (music.type === MusicTypes.Radio) {
-            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
-            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
-        } else if (music.type === MusicTypes.SoundBoard) {
-            const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url)
-                .on("finish", () => {
-                    //console.log(music.title + " ended playing.");
-                    serverQueue.songs.shift();
-                    this.playSongsInChannel(guildId, serverQueue.songs[0])
-                });
-            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+        try {
+            if (music.type === MusicTypes.Song) {
+                this.updateMusicData(serverQueue);
+                this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
+                const ytStream = await this.ytService.getStreamYoutube(music);
+                const dispatcher: StreamDispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
+                    .on("finish", () => {
+                        console.log(music.title + " ended playing.");
+                        serverQueue.songs.shift();
+                        this.playSongsInChannel(guildId, serverQueue.songs[0])
+                    });
+                //dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+                dispatcher.setVolumeDecibels(0.5);
+            } else if (music.type === MusicTypes.Radio) {
+                const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url);
+                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+            } else if (music.type === MusicTypes.SoundBoard) {
+                const dispatcher: StreamDispatcher = serverQueue.getConnection().play(music.url)
+                    .on("finish", () => {
+                        //console.log(music.title + " ended playing.");
+                        serverQueue.songs.shift();
+                        this.playSongsInChannel(guildId, serverQueue.songs[0])
+                    });
+                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            }
+        }
+        catch (ex) {
+            this.LoggerService.logger.error(ex)
         }
     }
 

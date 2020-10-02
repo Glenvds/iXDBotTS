@@ -16,6 +16,7 @@ import { SongService } from "./services/music/songService";
 import { GeneralBot } from "./services/general/general_bot";
 import { ReneBot } from './services/rene/rene_bot';
 import { musicAPI } from "./services/api/musicAPI";
+import { LoggerService } from "./services/general/loggerService";
 
 let container = new Container();
 
@@ -35,5 +36,5 @@ container.bind<SongService>(TYPES.SongService).to(SongService).inSingletonScope(
 container.bind<GeneralBot>(TYPES.GeneralBot).to(GeneralBot).inSingletonScope();
 container.bind<ReneBot>(TYPES.ReneBot).to(ReneBot).inSingletonScope();
 container.bind<musicAPI>(TYPES.musicAPI).to(musicAPI).inSingletonScope();
-
+container.bind<LoggerService>(TYPES.LoggerService).to(LoggerService).inSingletonScope();
 export default container;

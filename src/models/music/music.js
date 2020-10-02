@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Music = exports.MusicOptions = exports.MusicTypes = void 0;
 var MusicTypes;
 (function (MusicTypes) {
     MusicTypes["Radio"] = "radio";

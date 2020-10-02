@@ -18,6 +18,7 @@ const songService_1 = require("./services/music/songService");
 const general_bot_1 = require("./services/general/general_bot");
 const rene_bot_1 = require("./services/rene/rene_bot");
 const musicAPI_1 = require("./services/api/musicAPI");
+const loggerService_1 = require("./services/general/loggerService");
 let container = new inversify_1.Container();
 container.bind(types_1.TYPES.Bot).to(bot_1.Bot).inSingletonScope();
 container.bind(types_1.TYPES.Client).toConstantValue(new discord_js_1.Client());
@@ -35,5 +36,6 @@ container.bind(types_1.TYPES.SongService).to(songService_1.SongService).inSingle
 container.bind(types_1.TYPES.GeneralBot).to(general_bot_1.GeneralBot).inSingletonScope();
 container.bind(types_1.TYPES.ReneBot).to(rene_bot_1.ReneBot).inSingletonScope();
 container.bind(types_1.TYPES.musicAPI).to(musicAPI_1.musicAPI).inSingletonScope();
+container.bind(types_1.TYPES.LoggerService).to(loggerService_1.LoggerService).inSingletonScope();
 exports.default = container;
 //# sourceMappingURL=inversify.config.js.map

@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.cmdService = void 0;
 const command_1 = require("../../models/general/command");
 const inversify_1 = require("inversify");
 let cmdService = class cmdService {
