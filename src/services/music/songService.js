@@ -21,6 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SongService = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../types");
 const ytService_1 = require("./ytService");
