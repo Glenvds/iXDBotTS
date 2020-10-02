@@ -21,6 +21,7 @@
     "prism-media": "^1.2.2",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.0.0",
+    "tslog": "^2.9.0",
     "typescript": "^3.9.7",
     "ytdl-core": "^2.1.7",
     "ytdl-core-discord": "^1.2.3",

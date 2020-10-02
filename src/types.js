@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TYPES = void 0;
 exports.TYPES = {
     Bot: Symbol("Bot"),
     Client: Symbol("Client"),
@@ -19,6 +20,7 @@ exports.TYPES = {
     SongService: Symbol("SongService"),
     GeneralBot: Symbol("GeneralBot"),
     ReneBot: Symbol("ReneBot"),
-    musicAPI: Symbol("musicAPI")
+    musicAPI: Symbol("musicAPI"),
+    LoggerService: Symbol("LoggerService")
 };
 //# sourceMappingURL=types.js.map

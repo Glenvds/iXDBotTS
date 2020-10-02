@@ -9,24 +9,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Command = exports.CommandType = void 0;
+exports.LoggerService = void 0;
+const fs_1 = require("fs");
 const inversify_1 = require("inversify");
-var CommandType;
-(function (CommandType) {
-    CommandType[CommandType["NSFW"] = 0] = "NSFW";
-    CommandType[CommandType["Music"] = 1] = "Music";
-    CommandType[CommandType["General"] = 2] = "General";
-    CommandType[CommandType["Rene"] = 3] = "Rene";
-})(CommandType = exports.CommandType || (exports.CommandType = {}));
-let Command = class Command {
-    constructor(type, textCommand) {
-        this.type = type;
-        this.textCommand = textCommand;
+const tslog_1 = require("tslog");
+let LoggerService = class LoggerService {
+    constructor() {
+        this.logger = new tslog_1.Logger({ name: "ixdbotTSLogger", type: "pretty" });
+        this.logger.attachTransport({
+            silly: this.logFileToTransport,
+            debug: this.logFileToTransport,
+            trace: this.logFileToTransport,
+            info: this.logFileToTransport,
+            warn: this.logFileToTransport,
+            error: this.logFileToTransport,
+            fatal: this.logFileToTransport,
+        }, "debug");
+    }
+    logFileToTransport(logObj) {
+        fs_1.appendFileSync("ixdbotTSlogfile.log", JSON.stringify(logObj) + "\n");
     }
 };
-Command = __decorate([
+LoggerService = __decorate([
     inversify_1.injectable(),
-    __metadata("design:paramtypes", [Number, String])
-], Command);
-exports.Command = Command;
-//# sourceMappingURL=command.js.map
+    __metadata("design:paramtypes", [])
+], LoggerService);
+exports.LoggerService = LoggerService;
+//# sourceMappingURL=loggerService.js.map

@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.musicAPI = void 0;
 const inversify_1 = require("inversify");
 const fetch = require('node-fetch');
 let musicAPI = class musicAPI {

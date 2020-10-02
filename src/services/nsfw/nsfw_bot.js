@@ -21,15 +21,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NSFWBot = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../types");
 const message_responder_1 = require("../general/message-responder");
 const nsfwLink_1 = require("../../models/nsfw/nsfwLink");
 const urlService_1 = require("../general/urlService");
+const loggerService_1 = require("../general/loggerService");
 let NSFWBot = class NSFWBot {
-    constructor(MessageResponder, urlService) {
+    constructor(MessageResponder, urlService, loggerService) {
         this.MessageResponder = MessageResponder;
         this.urlService = urlService;
+        this.loggerService = loggerService;
         this.NSFW_BASEURLS = [
             new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Boobs, link: "http://media.oboobs.ru/boobs/", maxCount: 14678, needsPadding: 5 }),
             new nsfwLink_1.NSFWLink({ type: nsfwLink_1.NSFWLinkType.Ass, link: "http://media.obutts.ru/butts/", maxCount: 7417, needsPadding: 5 }),
@@ -75,8 +78,12 @@ let NSFWBot = class NSFWBot {
 };
 NSFWBot = __decorate([
     inversify_1.injectable(),
-    __param(0, inversify_1.inject(types_1.TYPES.MessageResponder)), __param(1, inversify_1.inject(types_1.TYPES.urlService)),
-    __metadata("design:paramtypes", [message_responder_1.MessageResponder, urlService_1.urlService])
+    __param(0, inversify_1.inject(types_1.TYPES.MessageResponder)),
+    __param(1, inversify_1.inject(types_1.TYPES.urlService)),
+    __param(2, inversify_1.inject(types_1.TYPES.LoggerService)),
+    __metadata("design:paramtypes", [message_responder_1.MessageResponder,
+        urlService_1.urlService,
+        loggerService_1.LoggerService])
 ], NSFWBot);
 exports.NSFWBot = NSFWBot;
 //# sourceMappingURL=nsfw_bot.js.map

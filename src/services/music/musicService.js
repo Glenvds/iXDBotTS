@@ -21,6 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MusicService = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../types");
 const message_responder_1 = require("../general/message-responder");
@@ -32,14 +33,16 @@ const music_1 = require("../../models/music/music");
 const ytService_1 = require("./ytService");
 const fs_1 = require("fs");
 const musicAPI_1 = require("../api/musicAPI");
+const loggerService_1 = require("../general/loggerService");
 let MusicService = class MusicService {
     //private musicDecibels = 0.001;
-    constructor(messageResponder, songService, queueService, ytService, musicAPI) {
+    constructor(messageResponder, songService, queueService, ytService, musicAPI, LoggerService) {
         this.messageResponder = messageResponder;
         this.songService = songService;
         this.queueService = queueService;
         this.ytService = ytService;
         this.musicAPI = musicAPI;
+        this.LoggerService = LoggerService;
         this.RADIO_STATIONS = [
             new music_1.Music({ title: "stubru", url: "http://icecast.vrtcdn.be/stubru-high.mp3", type: music_1.MusicTypes.Radio }),
             new music_1.Music({ title: "mnm", url: "http://icecast.vrtcdn.be/mnm-high.mp3", type: music_1.MusicTypes.Radio }),
@@ -138,31 +141,36 @@ let MusicService = class MusicService {
                 this.queueService.removeServerQueue(guildId);
                 return;
             }
-            if (music.type === music_1.MusicTypes.Song) {
-                this.updateMusicData(serverQueue);
-                this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
-                const ytStream = yield this.ytService.getStreamYoutube(music);
-                const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
-                    .on("finish", () => {
-                    console.log(music.title + " ended playing.");
-                    serverQueue.songs.shift();
-                    this.playSongsInChannel(guildId, serverQueue.songs[0]);
-                });
-                //dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
-                dispatcher.setVolumeDecibels(0.5);
+            try {
+                if (music.type === music_1.MusicTypes.Song) {
+                    this.updateMusicData(serverQueue);
+                    this.messageResponder.sendResponseToChannel(serverQueue.textChannel, `Started playing: ${music.title}. Requested by ${music.requester.username}`);
+                    const ytStream = yield this.ytService.getStreamYoutube(music);
+                    const dispatcher = serverQueue.getConnection().play(ytStream, { type: "opus" })
+                        .on("finish", () => {
+                        console.log(music.title + " ended playing.");
+                        serverQueue.songs.shift();
+                        this.playSongsInChannel(guildId, serverQueue.songs[0]);
+                    });
+                    //dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+                    dispatcher.setVolumeDecibels(0.5);
+                }
+                else if (music.type === music_1.MusicTypes.Radio) {
+                    const dispatcher = serverQueue.getConnection().play(music.url);
+                    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
+                }
+                else if (music.type === music_1.MusicTypes.SoundBoard) {
+                    const dispatcher = serverQueue.getConnection().play(music.url)
+                        .on("finish", () => {
+                        //console.log(music.title + " ended playing.");
+                        serverQueue.songs.shift();
+                        this.playSongsInChannel(guildId, serverQueue.songs[0]);
+                    });
+                    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+                }
             }
-            else if (music.type === music_1.MusicTypes.Radio) {
-                const dispatcher = serverQueue.getConnection().play(music.url);
-                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5); /// DIT TESTEN!!!!
-            }
-            else if (music.type === music_1.MusicTypes.SoundBoard) {
-                const dispatcher = serverQueue.getConnection().play(music.url)
-                    .on("finish", () => {
-                    //console.log(music.title + " ended playing.");
-                    serverQueue.songs.shift();
-                    this.playSongsInChannel(guildId, serverQueue.songs[0]);
-                });
-                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            catch (ex) {
+                this.LoggerService.logger.error(ex);
             }
         });
     }
@@ -219,11 +227,13 @@ MusicService = __decorate([
     __param(2, inversify_1.inject(types_1.TYPES.QueueService)),
     __param(3, inversify_1.inject(types_1.TYPES.ytService)),
     __param(4, inversify_1.inject(types_1.TYPES.musicAPI)),
+    __param(5, inversify_1.inject(types_1.TYPES.LoggerService)),
     __metadata("design:paramtypes", [message_responder_1.MessageResponder,
         songService_1.SongService,
         queueService_1.QueueService,
         ytService_1.ytService,
-        musicAPI_1.musicAPI])
+        musicAPI_1.musicAPI,
+        loggerService_1.LoggerService])
 ], MusicService);
 exports.MusicService = MusicService;
 //# sourceMappingURL=musicService.js.map

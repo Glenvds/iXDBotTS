@@ -8,6 +8,7 @@ import { cmdService } from "./services/general/cmdService";
 import { MusicBot } from "./services/music/music_bot";
 import { NSFWBot } from "./services/nsfw/nsfw_bot";
 import { GeneralBot } from "./services/general/general_bot";
+import { LoggerService } from './services/general/loggerService';
 
 @injectable()
 export class Bot {
@@ -24,7 +25,8 @@ export class Bot {
         @inject(TYPES.cmdService) private cmdService: cmdService,
         @inject(TYPES.MusicBot) private MusicBot: MusicBot,
         @inject(TYPES.NSFWBot) private NSFWBot: NSFWBot,
-        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot) {
+        @inject(TYPES.GeneralBot) private GeneralBot: GeneralBot,
+        @inject(TYPES.LoggerService) private LoggerService: LoggerService) {
     }
 
     public listen(): Promise<string> {
@@ -40,6 +42,7 @@ export class Bot {
                 const msgTextChannel: TextChannel = message.channel as TextChannel;
 
                 if (requestedCommand) {
+                    this.LoggerService.logger.silly("COMMAND: " + requestedCommand.textCommand + " of type " + requestedCommand.type + " started.")
                     switch (requestedCommand.type) {
                         case CommandType.Music:
                             if (!this.musicChannels.includes(msgTextChannel.id)) {
@@ -68,6 +71,7 @@ export class Bot {
                     this.messageResponder.sendResponseToChannel(msgTextChannel, "Oops! I don't know that command.");
                 }
             } catch (ex) {
+                this.LoggerService.logger.error(ex)
                 console.error(ex);
             }
         });

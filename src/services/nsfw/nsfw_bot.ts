@@ -5,6 +5,7 @@ import { TYPES } from "../../types";
 import { MessageResponder } from "../general/message-responder";
 import { NSFWLink, NSFWLinkType } from "../../models/nsfw/nsfwLink";
 import { urlService } from "../general/urlService";
+import { LoggerService } from "../general/loggerService";
 
 
 @injectable()
@@ -18,7 +19,9 @@ export class NSFWBot {
         new NSFWLink({ type: NSFWLinkType.Hentai, link: "https://s9v7j7a4.ssl.hwcdn.net/galleries/full/f4/f2/ff/f4f2ff1ace17d02bfaab856948a6c7aa/", maxCount: 19 }),
     ];
 
-    constructor(@inject(TYPES.MessageResponder) private MessageResponder: MessageResponder, @inject(TYPES.urlService) private urlService: urlService) {
+    constructor(@inject(TYPES.MessageResponder) private MessageResponder: MessageResponder,
+        @inject(TYPES.urlService) private urlService: urlService,
+        @inject(TYPES.LoggerService) private loggerService: LoggerService) {
     }
 
     async executeNSFWCommand(command: Command, message: Message) {
